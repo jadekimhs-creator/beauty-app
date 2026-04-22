@@ -168,7 +168,6 @@
             const coupangSearchUrl = (q) => `https://www.coupang.com/np/search?q=${encodeURIComponent(q)}`;
             const coupangUrl = p.coupangUrl || coupangSearchUrl(`${p.brand || ''} ${p.name}`);
             document.getElementById('btn-coupang').href = coupangUrl;
-            document.getElementById('btn-recommend').href = `recommend.html?id=${id}`;
             document.getElementById('btn-edit').href = `add.html?edit=${id}`;
 
             // 삭제
