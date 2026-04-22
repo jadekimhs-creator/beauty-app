@@ -140,6 +140,15 @@
         // 초기 렌더링
         render();
 
+        // 필터 버튼 (정렬 전환)
+        let sortAsc = true;
+        document.querySelector('.btn-filter').addEventListener('click', () => {
+            sortAsc = !sortAsc;
+            const icon = document.querySelector('.btn-filter i');
+            icon.style.transform = sortAsc ? 'rotate(0deg)' : 'rotate(180deg)';
+            render();
+        });
+
         // ── 관리자 모드 트리거 (로고 5번 클릭) ─────────────────────────────
         let logoClicks = 0;
         document.querySelector('.app-logo').addEventListener('click', () => {

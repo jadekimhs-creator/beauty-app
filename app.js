@@ -204,11 +204,11 @@ export function renderProductCard(p) {
                 <div class="progress-bar-fill ${fillClass}" style="width: ${pct}%"></div>
             </div>
         </div>
-        <div class="card-actions" onclick="event.preventDefault()">
-            <a class="btn-reorder" href="${coupangUrl}" target="_blank" rel="noopener">
+        <div class="card-actions">
+            <a class="btn-reorder" href="${coupangUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
                 🛒 쿠팡 재구매
             </a>
-            <a class="btn-alt" href="recommend.html?id=${p.id}">
+            <a class="btn-alt" href="recommend.html?id=${p.id}" onclick="event.stopPropagation()">
                 ✨ 다른 거?
             </a>
         </div>

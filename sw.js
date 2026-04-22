@@ -1,4 +1,4 @@
-const CACHE_NAME = 'beauty-app-v2';
+const CACHE_NAME = 'beauty-app-v3';
 const STATIC_ASSETS = [
     './',
     'index.html',
@@ -31,7 +31,7 @@ self.addEventListener('activate', (event) => {
 
 // ── Fetch: 캐시 우선, 네트워크 폴백 ─────────────────────────────────────
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') return;
+    if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
     event.respondWith(
         caches.match(event.request).then(cached =>
             cached || fetch(event.request).then(response => {
