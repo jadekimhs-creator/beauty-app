@@ -53,78 +53,68 @@
 </head>
 <body>
 
-    <div class="page-header">
-        <button class="back-btn" onclick="history.back()">←</button>
-        <h1 class="page-title" id="detail-name">상세 정보</h1>
-    </div>
+    <div class="container">
+        <!-- Header -->
+        <header class="detail-header">
+            <a href="index.html" class="btn-circle" style="text-decoration:none;"><i data-lucide="chevron-left" style="width:20px; color:var(--text-sub);"></i></a>
+            <h1 id="detail-name" style="font-size:1.4rem; font-weight:700;">제품 정보</h1>
+        </header>
 
-    <!-- 도넛 차트 -->
-    <div class="donut-wrap">
-        <svg class="donut-svg" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="50" fill="none" stroke="#F3E8FF" stroke-width="14"/>
-            <circle id="donut-fill" cx="60" cy="60" r="50" fill="none" stroke="url(#grad)" stroke-width="14"
-                stroke-dasharray="314" stroke-dashoffset="314"
-                stroke-linecap="round"
-                transform="rotate(-90 60 60)"/>
-            <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color:#EC4899;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-        </svg>
-        <div class="donut-label">
-            <div class="donut-pct" id="donut-pct">--%</div>
-            <div class="donut-sub" id="donut-sub">남은 양</div>
+        <!-- Donut Chart -->
+        <div class="donut-chart">
+            <svg width="180" height="180">
+                <circle class="bg" cx="90" cy="90" r="50"></circle>
+                <circle class="fill" id="donut-fill" cx="90" cy="90" r="50" style="stroke-dasharray: 314.15; stroke-dashoffset: 314.15;"></circle>
+            </svg>
+            <div class="donut-text">
+                <span class="pct" id="donut-pct">0%</span>
+                <span class="label" id="donut-sub">분석 중</span>
+            </div>
         </div>
-    </div>
 
-    <!-- 상세 정보 -->
-    <div class="detail-card">
-        <div class="detail-row">
-            <span class="detail-key">브랜드</span>
-            <span class="detail-val" id="d-brand">-</span>
+        <!-- Detail Info -->
+        <div class="detail-info">
+            <div class="info-row">
+                <span class="label">브랜드</span>
+                <span class="value" id="d-brand">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">카테고리</span>
+                <span class="value" id="d-cat">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">전체 용량</span>
+                <span class="value" id="d-cap">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">1일 사용량</span>
+                <span class="value" id="d-daily">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">개봉일</span>
+                <span class="value" id="d-opened">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">소진 예상</span>
+                <span class="value" id="d-runout" style="color:var(--accent);">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">남은 일수</span>
+                <span class="value" id="d-days">-</span>
+            </div>
         </div>
-        <div class="detail-row">
-            <span class="detail-key">카테고리</span>
-            <span class="detail-val" id="d-cat">-</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-key">전체 용량</span>
-            <span class="detail-val" id="d-cap">-</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-key">1일 사용량</span>
-            <span class="detail-val" id="d-daily">-</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-key">개봉일</span>
-            <span class="detail-val" id="d-opened">-</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-key">예상 소진일</span>
-            <span class="detail-val" id="d-runout">-</span>
-        </div>
-        <div class="detail-row">
-            <span class="detail-key">남은 일수</span>
-            <span class="detail-val" id="d-days">-</span>
-        </div>
-    </div>
 
-    <!-- 액션 버튼 -->
-    <div class="action-group">
-        <a class="btn-full btn-coupang" id="btn-coupang" href="#" target="_blank">
-            🛒 쿠팡에서 지금 재구매하기
-        </a>
-        <a class="btn-full btn-recommend" id="btn-recommend" href="#">
-            ✨ 이번엔 다른 거 써볼까?
-        </a>
-        <a class="btn-full btn-edit" id="btn-edit" href="#">
-            ✏️ 정보 수정
-        </a>
-        <button class="btn-full btn-del" id="btn-delete">
-            🗑️ 제품 삭제
-        </button>
+        <!-- Buttons -->
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <a id="btn-coupang" href="#" target="_blank" class="btn-save" style="margin-top:0; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i data-lucide="shopping-cart" style="width:20px;"></i> 쿠팡에서 재구매
+            </a>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <a id="btn-edit" href="#" class="btn-alt" style="padding:16px; border-radius:18px; text-decoration:none;">편집하기</a>
+                <button id="btn-delete" class="btn-alt" style="padding:16px; border-radius:18px; color:#ef4444; border:none; cursor:pointer;">삭제하기</button>
+            </div>
+        </div>
     </div>
 
     <script type="module">

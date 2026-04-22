@@ -9,80 +9,65 @@
 </head>
 <body>
 
-    <!-- 헤더 -->
-    <div class="page-header">
-        <button class="back-btn" onclick="history.back()">←</button>
-        <h1 class="page-title" id="page-title">제품 등록</h1>
-    </div>
+    <div class="container">
+        <!-- Header -->
+        <header class="detail-header">
+            <a href="index.html" class="btn-circle" style="text-decoration:none;"><i data-lucide="chevron-left" style="width:20px; color:var(--text-sub);"></i></a>
+            <h1 id="page-title" style="font-size:1.4rem; font-weight:700;">제품 등록</h1>
+        </header>
 
-    <!-- 폼 -->
-    <div class="form-body">
         <div class="form-group">
-            <label class="form-label">제품명 *</label>
-            <input class="form-input" type="text" id="name" placeholder="예: 설화수 퍼펙팅 세럼" required>
+            <label>제품명</label>
+            <input type="text" id="name" placeholder="예: 설화수 퍼펙팅 세럼">
         </div>
 
         <div class="form-group">
-            <label class="form-label">브랜드</label>
-            <input class="form-input" type="text" id="brand" placeholder="예: 설화수">
+            <label>브랜드 (선택)</label>
+            <input type="text" id="brand" placeholder="예: 설화수">
         </div>
 
         <div class="form-group">
-            <label class="form-label">카테고리 *</label>
-            <div class="category-grid">
-                <button type="button" class="cat-btn active" data-cat="skincare">
-                    <span class="emoji">🧴</span>스킨케어
-                </button>
-                <button type="button" class="cat-btn" data-cat="hair">
-                    <span class="emoji">💇</span>헤어
-                </button>
-                <button type="button" class="cat-btn" data-cat="body">
-                    <span class="emoji">🛁</span>바디
-                </button>
-                <button type="button" class="cat-btn" data-cat="makeup">
-                    <span class="emoji">💄</span>메이크업
-                </button>
+            <label>카테고리</label>
+            <div class="cat-grid">
+                <div class="cat-btn active" data-cat="skincare">🧴 스킨케어</div>
+                <div class="cat-btn" data-cat="hair">💇 헤어</div>
+                <div class="cat-btn" data-cat="body">🛁 바디</div>
+                <div class="cat-btn" data-cat="makeup">💄 메이크업</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+                <label>전체 용량 (ml/g)</label>
+                <input type="number" id="capacity" placeholder="60">
+            </div>
+            <div class="form-group">
+                <label>1일 사용량 (ml/g)</label>
+                <input type="number" id="dailyUse" placeholder="0.8" step="0.1">
             </div>
         </div>
 
         <div class="form-group">
-            <label class="form-label">용량 & 1일 사용량 *</label>
-            <div class="form-row">
-                <div>
-                    <input class="form-input" type="number" id="capacity" placeholder="전체 용량 (ml/g)" min="1" step="0.1">
-                </div>
-                <div>
-                    <input class="form-input" type="number" id="dailyUse" placeholder="1일 사용량 (ml/g)" min="0.01" step="0.01">
-                </div>
+            <label>개봉 날짜</label>
+            <input type="date" id="openedAt">
+        </div>
+
+        <div class="form-group">
+            <label>쿠팡 재구매 링크 (선택)</label>
+            <input type="url" id="coupangUrl" placeholder="https://...">
+        </div>
+
+        <!-- Preview Card -->
+        <div id="preview-card" style="display:none; margin-top: 24px;">
+            <div class="sum-card" style="background: var(--primary); color: white; border: none; text-align: left; padding:20px; border-radius:24px;">
+                <span class="label" style="color: rgba(255,255,255,0.7); font-size:0.8rem; margin-bottom:8px;">✨ 예측 결과</span>
+                <div id="preview-date" style="font-size:1.1rem; font-weight: 700; margin-bottom: 4px;">-</div>
+                <div id="preview-days" style="font-size: 0.9rem; opacity: 0.9;">-</div>
             </div>
-            <p style="margin-top:6px; font-size:0.78rem; color:var(--text-muted);">
-                💡 1회 사용량 × 하루 사용 횟수를 입력하세요. (예: 세럼 한 펌프 = 약 0.3ml, 하루 2번 = 0.6ml)
-            </p>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">개봉일 *</label>
-            <input class="form-input" type="date" id="openedAt">
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">쿠팡 구매 링크 (선택)</label>
-            <input class="form-input" type="url" id="coupangUrl" placeholder="https://www.coupang.com/...">
-            <p style="margin-top:6px; font-size:0.78rem; color:var(--text-muted);">
-                입력하지 않으면 자동으로 쿠팡 검색 링크를 생성합니다.
-            </p>
-        </div>
+        <button class="btn-save" id="save-btn">저장하기</button>
     </div>
-
-    <!-- 소진 예상 미리보기 -->
-    <div class="preview-card" id="preview-card" style="display:none;">
-        <h4>✨ 소진 예상 미리보기</h4>
-        <div class="preview-date" id="preview-date">-</div>
-        <div class="preview-days" id="preview-days">-</div>
-    </div>
-
-    <!-- 저장 버튼 -->
-    <button class="btn-save" id="save-btn">💾 저장하기</button>
 
     <script type="module">
         import { getProductById, addProduct, updateProduct, calcDaysLeft, calcRunoutDate, formatDate } from './app.js';

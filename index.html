@@ -17,57 +17,59 @@
 </head>
 <body>
 
-    <!-- 헤더 -->
-    <header class="app-header">
-        <span class="app-logo">💄 다 썼어?</span>
-        <div class="header-icons">
-            <button class="icon-btn" title="정렬" id="sort-btn">
-                <i data-lucide="sliders-horizontal" style="width:18px;height:18px;"></i>
-            </button>
-        </div>
-    </header>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="app-logo">💄 다 썼어<span>?</span></div>
+            <div class="btn-filter"><i data-lucide="sliders-horizontal" style="width:20px;"></i></div>
+        </header>
 
-    <!-- 인사 배너 -->
-    <div class="greeting-banner">
-        <h2 id="greeting-text">안녕하세요! 👋</h2>
-        <p id="greeting-sub">제품을 등록하고 재구매 타이밍을 놓치지 마세요.</p>
+        <!-- Greeting -->
+        <div class="greeting">
+            <h2 id="greeting-text">반가워요! ✨</h2>
+            <p id="greeting-sub">오늘도 아름다운 하루 보내세요.</p>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-cards">
+            <div class="sum-card">
+                <span class="label">전체 제품</span>
+                <span class="value" id="total-count">0</span>
+            </div>
+            <div class="sum-card">
+                <span class="label">소진 임박</span>
+                <span class="value" id="danger-count" style="color:var(--accent);">0</span>
+            </div>
+            <div class="sum-card">
+                <span class="label">주의</span>
+                <span class="value" id="warn-count" style="color:#f59e0b;">0</span>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert-area" id="alert-area"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-chip active" data-cat="all">전체</div>
+            <div class="tab-chip" data-cat="skincare">🧴 스킨케어</div>
+            <div class="tab-chip" data-cat="hair">💇 헤어</div>
+            <div class="tab-chip" data-cat="body">🛁 바디</div>
+            <div class="tab-chip" data-cat="makeup">💄 메이크업</div>
+        </div>
+
+        <!-- Product List -->
+        <div class="product-list" id="product-list">
+            <div class="empty-state">
+                <p>데이터 불러오는 중... 🔄</p>
+            </div>
+        </div>
     </div>
 
-    <!-- 요약 칩 -->
-    <div class="summary-row">
-        <div class="summary-chip">
-            <div class="num" id="total-count">0</div>
-            <div class="label">등록 제품</div>
-        </div>
-        <div class="summary-chip danger">
-            <div class="num" id="danger-count">0</div>
-            <div class="label">7일 이내 소진</div>
-        </div>
-        <div class="summary-chip warn">
-            <div class="num" id="warn-count">0</div>
-            <div class="label">30일 내 소진</div>
-        </div>
-    </div>
-
-    <!-- 경고 배너 (동적) -->
-    <div id="alert-area"></div>
-
-    <!-- 탭 필터 -->
-    <div class="tab-bar">
-        <button class="tab-chip active" data-cat="all">전체</button>
-        <button class="tab-chip" data-cat="skincare">🧴 스킨케어</button>
-        <button class="tab-chip" data-cat="hair">💇 헤어</button>
-        <button class="tab-chip" data-cat="body">🛁 바디</button>
-        <button class="tab-chip" data-cat="makeup">💄 메이크업</button>
-    </div>
-
-    <!-- 제품 목록 -->
-    <div class="product-list" id="product-list">
-        <!-- 동적 렌더링 -->
-    </div>
-
-    <!-- FAB: 제품 추가 버튼 -->
-    <a class="fab" href="add.html" title="제품 추가">+</a>
+    <!-- FAB -->
+    <a class="fab" href="add.html" title="제품 추가">
+        <i data-lucide="plus"></i>
+    </a>
 
     <script type="module">
         import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js';
