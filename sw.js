@@ -1,14 +1,14 @@
 const CACHE_NAME = 'beauty-app-v1';
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/add.html',
-    '/detail.html',
-    '/recommend.html',
-    '/style.css',
-    '/app.js',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png',
+    './',
+    'index.html',
+    'add.html',
+    'detail.html',
+    'recommend.html',
+    'style.css',
+    'app.js',
+    'icons/icon-192.png',
+    'icons/icon-512.png',
 ];
 
 // ── 설치: 정적 파일 캐시 ──────────────────────────────────────────────────
