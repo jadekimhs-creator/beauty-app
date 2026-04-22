@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 상세 | 다 썼어?</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .detail-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 0 20px 16px;
+            box-shadow: var(--shadow-card);
+            border: 1.5px solid var(--border);
+        }
+        .detail-row {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-key { font-size: 0.85rem; color: var(--text-muted); }
+        .detail-val { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+        .action-group {
+            display: flex; flex-direction: column; gap: 10px;
+            padding: 0 20px 20px;
+        }
+        .btn-full {
+            width: 100%; padding: 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; border: none;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none;
+        }
+        .btn-coupang {
+            background: linear-gradient(135deg, var(--pink-accent), var(--purple-accent));
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(236,72,153,0.3);
+        }
+        .btn-recommend {
+            background: var(--purple-soft);
+            color: var(--purple-accent);
+        }
+        .btn-edit {
+            background: var(--surface2);
+            color: var(--text-sub);
+        }
+        .btn-del { background: #fff5f5; color: var(--red); border: 1.5px solid #fee2e2; }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h1 class="page-title" id="detail-name">상세 정보</h1>
+    </div>
+
+    <!-- 도넛 차트 -->
+    <div class="donut-wrap">
+        <svg class="donut-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#F3E8FF" stroke-width="14"/>
+            <circle id="donut-fill" cx="60" cy="60" r="50" fill="none" stroke="url(#grad)" stroke-width="14"
+                stroke-dasharray="314" stroke-dashoffset="314"
+                stroke-linecap="round"
+                transform="rotate(-90 60 60)"/>
+            <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#EC4899;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+        </svg>
+        <div class="donut-label">
+            <div class="donut-pct" id="donut-pct">--%</div>
+            <div class="donut-sub" id="donut-sub">남은 양</div>
+        </div>
+    </div>
+
+    <!-- 상세 정보 -->
+    <div class="detail-card">
+        <div class="detail-row">
+            <span class="detail-key">브랜드</span>
+            <span class="detail-val" id="d-brand">-</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-key">카테고리</span>
+            <span class="detail-val" id="d-cat">-</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-key">전체 용량</span>
+            <span class="detail-val" id="d-cap">-</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-key">1일 사용량</span>
+            <span class="detail-val" id="d-daily">-</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-key">개봉일</span>
+            <span class="detail-val" id="d-opened">-</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-key">예상 소진일</span>
+            <span class="detail-val" id="d-runout">-</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-key">남은 일수</span>
+            <span class="detail-val" id="d-days">-</span>
+        </div>
+    </div>
+
+    <!-- 액션 버튼 -->
+    <div class="action-group">
+        <a class="btn-full btn-coupang" id="btn-coupang" href="#" target="_blank">
+            🛒 쿠팡에서 지금 재구매하기
+        </a>
+        <a class="btn-full btn-recommend" id="btn-recommend" href="#">
+            ✨ 이번엔 다른 거 써볼까?
+        </a>
+        <a class="btn-full btn-edit" id="btn-edit" href="#">
+            ✏️ 정보 수정
+        </a>
+        <button class="btn-full btn-del" id="btn-delete">
+            🗑️ 제품 삭제
+        </button>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const id = new URLSearchParams(window.location.search).get('id');
+        const p = getProductById(id);
+
+        if (!p) {
+            alert('제품을 찾을 수 없습니다.');
+            location.href = 'index.html';
+        }
+
+        const daysLeft = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
+        const pct = calcRemainingPct(p.openedAt, p.capacityMl, p.dailyUseMl);
+        const runout = calcRunoutDate(p.openedAt, p.capacityMl, p.dailyUseMl);
+        const cat = getCatInfo(p.category);
+        const status = getStatus(daysLeft);
+
+        // 페이지 타이틀
+        document.getElementById('detail-name').textContent = p.name;
+
+        // 도넛 차트
+        const circumference = 2 * Math.PI * 50; // ~314
+        const offset = circumference * (1 - pct / 100);
+        const donutFill = document.getElementById('donut-fill');
+        setTimeout(() => { donutFill.style.strokeDashoffset = offset; }, 100);
+
+        if (status === 'danger') donutFill.style.stroke = '#EF4444';
+        else if (status === 'warn') donutFill.style.stroke = '#F59E0B';
+
+        document.getElementById('donut-pct').textContent = `${pct}%`;
+        document.getElementById('donut-sub').textContent =
+            daysLeft <= 0 ? '소진됨' :
+            status === 'danger' ? '🚨 위험!' :
+            status === 'warn' ? '⚡ 주의' : '✅ 여유 있음';
+
+        // 상세 정보
+        document.getElementById('d-brand').textContent = p.brand || '-';
+        document.getElementById('d-cat').textContent = `${cat.emoji} ${cat.label}`;
+        document.getElementById('d-cap').textContent = `${p.capacityMl}ml`;
+        document.getElementById('d-daily').textContent = `${p.dailyUseMl}ml/일`;
+        document.getElementById('d-opened').textContent = formatDate(p.openedAt);
+        document.getElementById('d-runout').textContent = formatDate(runout);
+        document.getElementById('d-days').textContent =
+            daysLeft <= 0 ? '이미 소진' : `${daysLeft}일 남음`;
+
+        // 버튼 링크
+        const coupangUrl = p.coupangUrl || coupangSearchUrl(`${p.brand || ''} ${p.name}`);
+        document.getElementById('btn-coupang').href = coupangUrl;
+        document.getElementById('btn-recommend').href = `recommend.html?id=${id}`;
+        document.getElementById('btn-edit').href = `add.html?edit=${id}`;
+
+        // 삭제
+        document.getElementById('btn-delete').addEventListener('click', () => {
+            if (confirm(`"${p.name}"을(를) 삭제할까요?`)) {
+                deleteProduct(id);
+                location.href = 'index.html';
+            }
+        });
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>

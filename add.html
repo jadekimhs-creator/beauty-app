@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 등록 | 다 썼어?</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- 헤더 -->
+    <div class="page-header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h1 class="page-title" id="page-title">제품 등록</h1>
+    </div>
+
+    <!-- 폼 -->
+    <div class="form-body">
+        <div class="form-group">
+            <label class="form-label">제품명 *</label>
+            <input class="form-input" type="text" id="name" placeholder="예: 설화수 퍼펙팅 세럼" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">브랜드</label>
+            <input class="form-input" type="text" id="brand" placeholder="예: 설화수">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">카테고리 *</label>
+            <div class="category-grid">
+                <button type="button" class="cat-btn active" data-cat="skincare">
+                    <span class="emoji">🧴</span>스킨케어
+                </button>
+                <button type="button" class="cat-btn" data-cat="hair">
+                    <span class="emoji">💇</span>헤어
+                </button>
+                <button type="button" class="cat-btn" data-cat="body">
+                    <span class="emoji">🛁</span>바디
+                </button>
+                <button type="button" class="cat-btn" data-cat="makeup">
+                    <span class="emoji">💄</span>메이크업
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">용량 & 1일 사용량 *</label>
+            <div class="form-row">
+                <div>
+                    <input class="form-input" type="number" id="capacity" placeholder="전체 용량 (ml/g)" min="1" step="0.1">
+                </div>
+                <div>
+                    <input class="form-input" type="number" id="dailyUse" placeholder="1일 사용량 (ml/g)" min="0.01" step="0.01">
+                </div>
+            </div>
+            <p style="margin-top:6px; font-size:0.78rem; color:var(--text-muted);">
+                💡 1회 사용량 × 하루 사용 횟수를 입력하세요. (예: 세럼 한 펌프 = 약 0.3ml, 하루 2번 = 0.6ml)
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">개봉일 *</label>
+            <input class="form-input" type="date" id="openedAt">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">쿠팡 구매 링크 (선택)</label>
+            <input class="form-input" type="url" id="coupangUrl" placeholder="https://www.coupang.com/...">
+            <p style="margin-top:6px; font-size:0.78rem; color:var(--text-muted);">
+                입력하지 않으면 자동으로 쿠팡 검색 링크를 생성합니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- 소진 예상 미리보기 -->
+    <div class="preview-card" id="preview-card" style="display:none;">
+        <h4>✨ 소진 예상 미리보기</h4>
+        <div class="preview-date" id="preview-date">-</div>
+        <div class="preview-days" id="preview-days">-</div>
+    </div>
+
+    <!-- 저장 버튼 -->
+    <button class="btn-save" id="save-btn">💾 저장하기</button>
+
+    <script src="app.js"></script>
+    <script>
+        // 오늘 날짜 기본값
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('openedAt').value = today;
+
+        let selectedCat = 'skincare';
+        let editId = null;
+
+        // URL 파라미터로 수정 모드 감지
+        const urlParams = new URLSearchParams(window.location.search);
+        editId = urlParams.get('edit');
+        if (editId) {
+            document.getElementById('page-title').textContent = '제품 수정';
+            document.getElementById('save-btn').textContent = '✏️ 수정 완료';
+            const p = getProductById(editId);
+            if (p) {
+                document.getElementById('name').value = p.name;
+                document.getElementById('brand').value = p.brand || '';
+                document.getElementById('capacity').value = p.capacityMl;
+                document.getElementById('dailyUse').value = p.dailyUseMl;
+                document.getElementById('openedAt').value = p.openedAt;
+                document.getElementById('coupangUrl').value = p.coupangUrl || '';
+                selectedCat = p.category;
+                document.querySelectorAll('.cat-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.cat === selectedCat);
+                });
+            }
+        }
+
+        // 카테고리 선택
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedCat = btn.dataset.cat;
+                updatePreview();
+            });
+        });
+
+        // 미리보기 업데이트
+        function updatePreview() {
+            const capacity = parseFloat(document.getElementById('capacity').value);
+            const dailyUse = parseFloat(document.getElementById('dailyUse').value);
+            const openedAt = document.getElementById('openedAt').value;
+
+            if (capacity > 0 && dailyUse > 0 && openedAt) {
+                document.getElementById('preview-card').style.display = 'block';
+                const daysLeft = calcDaysLeft(openedAt, capacity, dailyUse);
+                const runout = calcRunoutDate(openedAt, capacity, dailyUse);
+                document.getElementById('preview-date').textContent = `📅 ${formatDate(runout)} 소진 예상`;
+
+                if (daysLeft <= 0) {
+                    document.getElementById('preview-days').textContent = '⚠️ 이미 소진된 날짜예요!';
+                } else if (daysLeft <= 7) {
+                    document.getElementById('preview-days').textContent = `🚨 ${daysLeft}일 남음 — 얼른 주문하세요!`;
+                } else if (daysLeft <= 30) {
+                    document.getElementById('preview-days').textContent = `⚡ ${daysLeft}일 남음 — 슬슬 준비하세요`;
+                } else {
+                    document.getElementById('preview-days').textContent = `✅ ${daysLeft}일 남음 — 여유 있어요!`;
+                }
+            } else {
+                document.getElementById('preview-card').style.display = 'none';
+            }
+        }
+
+        ['capacity', 'dailyUse', 'openedAt'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updatePreview);
+        });
+
+        // 저장
+        document.getElementById('save-btn').addEventListener('click', () => {
+            const name = document.getElementById('name').value.trim();
+            const capacity = parseFloat(document.getElementById('capacity').value);
+            const dailyUse = parseFloat(document.getElementById('dailyUse').value);
+            const openedAt = document.getElementById('openedAt').value;
+
+            if (!name) return alert('제품명을 입력해주세요.');
+            if (!capacity || capacity <= 0) return alert('전체 용량을 입력해주세요.');
+            if (!dailyUse || dailyUse <= 0) return alert('1일 사용량을 입력해주세요.');
+            if (!openedAt) return alert('개봉일을 선택해주세요.');
+
+            const product = {
+                name,
+                brand: document.getElementById('brand').value.trim(),
+                category: selectedCat,
+                capacityMl: capacity,
+                dailyUseMl: dailyUse,
+                openedAt,
+                coupangUrl: document.getElementById('coupangUrl').value.trim(),
+            };
+
+            if (editId) {
+                updateProduct(editId, product);
+            } else {
+                addProduct(product);
+            }
+
+            window.location.href = 'index.html';
+        });
+
+        lucide.createIcons();
+        updatePreview();
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이번엔 다른 거? | 다 썼어?</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .ai-header {
+            background: linear-gradient(135deg, var(--pink-soft), var(--purple-soft));
+            margin: 0 20px 20px;
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            border: 1.5px solid var(--border);
+        }
+        .ai-header .emoji { font-size: 2.5rem; margin-bottom: 10px; }
+        .ai-header h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+        .ai-header p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+        .current-product {
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin: 0 20px 20px;
+            box-shadow: var(--shadow-card);
+            border: 1.5px solid var(--border);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .current-product .emoji-big { font-size: 2rem; }
+        .current-product h3 { font-size: 0.95rem; font-weight: 700; }
+        .current-product p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+        .section-title {
+            padding: 0 20px 12px;
+            font-size: 0.85rem; font-weight: 700; color: var(--text-sub);
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .recommend-list { padding: 0 20px; }
+        .coupang-tag {
+            display: inline-block;
+            font-size: 0.7rem; font-weight: 600;
+            padding: 3px 8px; border-radius: 20px;
+            background: #fff7e6; color: #C75B00;
+            border: 1px solid #ffe4b2;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h1 class="page-title">이번엔 다른 거? ✨</h1>
+    </div>
+
+    <!-- AI 소개 헤더 -->
+    <div class="ai-header">
+        <div class="emoji">🔮</div>
+        <h2>비슷한 대안 제품 추천</h2>
+        <p>현재 사용 중인 제품과 같은 카테고리에서<br>인기 있는 대안 제품들을 추천해 드려요!</p>
+    </div>
+
+    <!-- 현재 제품 -->
+    <div class="current-product" id="current-product">
+        <div class="emoji-big">🧴</div>
+        <div>
+            <h3 id="cur-name">로딩 중...</h3>
+            <p id="cur-sub">-</p>
+        </div>
+    </div>
+
+    <!-- 추천 목록 -->
+    <div class="section-title">🌟 추천 대안 제품</div>
+    <div class="recommend-list" id="recommend-list">
+        <!-- 동적 렌더링 -->
+    </div>
+
+    <!-- 쿠팡 직접 검색 -->
+    <div class="section-title" style="margin-top: 20px;">🔍 직접 검색하기</div>
+    <div style="padding: 0 20px 30px; display: flex; flex-direction: column; gap: 10px;">
+        <a id="search-coupang" href="#" target="_blank" class="btn-full btn-coupang"
+            style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:0.95rem;color:#fff;background:linear-gradient(135deg,#EC4899,#A855F7);">
+            🛒 쿠팡에서 같은 카테고리 검색
+        </a>
+        <a id="search-oliveyoung" href="#" target="_blank"
+            style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:0.95rem;color:var(--pink-accent);background:var(--pink-soft);border:1.5px solid var(--border);">
+            🌿 올리브영에서 검색
+        </a>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // 카테고리별 추천 데이터 (MVP: 정적 큐레이션)
+        const RECOMMENDATIONS = {
+            skincare: [
+                { name: '이니스프리 그린티 씨드 세럼', reason: '촉촉한 수분 공급에 인기 만점. 가성비 최고의 국민 세럼!', search: '이니스프리 그린티 씨드 세럼' },
+                { name: '닥터자르트 시카페어 크림', reason: '진정 효과 탁월. 예민한 피부에 특히 추천해요.', search: '닥터자르트 시카페어' },
+                { name: '에스트라 아토베리어 365 크림', reason: '극건성·민감성 피부의 찐 필수템. 빠른 흡수력!', search: '에스트라 아토베리어' },
+                { name: '라로슈포제 시카플라스트 밤', reason: '피부 장벽 회복 전문. 약국 더마 뷰티의 대표 제품.', search: '라로슈포제 시카플라스트' },
+            ],
+            hair: [
+                { name: 'TS 트리트먼트 샴푸', reason: '탈모 고민 있다면 이것! 꾸준히 사용한 분들 효과 보셨대요.', search: 'TS샴푸 트리트먼트' },
+                { name: '아이오페 더마 리페어 샴푸', reason: '두피 케어와 탈모 예방을 동시에! 부드러운 거품.', search: '아이오페 더마 리페어 샴푸' },
+                { name: '프리메라 알파인 베리 샴푸', reason: '식물성 성분 기반. 자극 없는 데일리 샴푸로 인기.', search: '프리메라 알파인 베리 샴푸' },
+                { name: '케라시스 딥케어 트리트먼트', reason: '가격 대비 촉촉함이 최고! 손상 모발 집중 케어.', search: '케라시스 딥케어 트리트먼트' },
+            ],
+            body: [
+                { name: '니베아 소프트 바디로션', reason: '클래식 중의 클래식. 빠른 흡수로 끈적임 없어요.', search: '니베아 소프트 바디로션' },
+                { name: '바세린 인텐시브 케어 로션', reason: '건조한 피부에 특화. 병원에서도 추천하는 성분.', search: '바세린 인텐시브 케어 로션' },
+                { name: '세타필 모이스처라이징 크림', reason: '예민한 피부도 안심. 더마 브랜드의 믿음직한 바디크림.', search: '세타필 모이스처라이징 크림' },
+                { name: '아베노 데일리 모이스처라이징 로션', reason: '오트밀 성분으로 피부 진정. 미국에서 건너온 히트템!', search: '아베노 바디로션' },
+            ],
+            makeup: [
+                { name: 'CLIO 킬 커버 파운웨어 쿠션', reason: '지속력과 커버력 모두 잡은 국내 쿠션의 대표 주자.', search: '클리오 킬커버 파운웨어 쿠션' },
+                { name: '에뛰드 글라스루주 에어', reason: '수분 광택 립. 촉촉하게 발리고 오래 지속돼요.', search: '에뛰드 글라스루주' },
+                { name: '롬앤 베러 댄 팔레트', reason: '눈 화장 입문자부터 고수까지 즐겨 쓰는 아이섀도우.', search: '롬앤 베러댄팔레트' },
+                { name: '메이블린 피트 미 컨실러', reason: '가성비 갑 컨실러. 묽지 않고 커버력 좋아요.', search: '메이블린 핏미 컨실러' },
+            ],
+        };
+
+        const id = new URLSearchParams(window.location.search).get('id');
+        const p = id ? getProductById(id) : null;
+
+        if (p) {
+            const cat = getCatInfo(p.category);
+            document.getElementById('cur-name').textContent = p.name;
+            document.getElementById('cur-sub').textContent = `${cat.emoji} ${cat.label} · ${p.brand || '브랜드 미입력'}`;
+            document.querySelector('.current-product .emoji-big').textContent = cat.emoji;
+
+            // 추천 목록
+            const recs = RECOMMENDATIONS[p.category] || RECOMMENDATIONS.skincare;
+            const listEl = document.getElementById('recommend-list');
+            listEl.innerHTML = recs.map((r, i) => `
+                <div class="recommend-card">
+                    <div class="recommend-num">${i + 1}</div>
+                    <div class="recommend-info">
+                        <div class="recommend-name">${r.name}</div>
+                        <div class="recommend-reason">${r.reason}</div>
+                        <span class="coupang-tag">🛒 쿠팡 링크 →</span>
+                    </div>
+                    <a href="https://www.coupang.com/np/search?q=${encodeURIComponent(r.search)}"
+                        target="_blank" rel="noopener"
+                        style="flex-shrink:0; font-size:1.3rem; text-decoration:none;">→</a>
+                </div>
+            `).join('');
+
+            // 쿠팡/올리브영 검색 링크
+            const catLabel = cat.label;
+            document.getElementById('search-coupang').href = `https://www.coupang.com/np/search?q=${encodeURIComponent(catLabel)}`;
+            document.getElementById('search-oliveyoung').href = `https://www.oliveyoung.co.kr/store/search/getSearchMain.do?query=${encodeURIComponent(catLabel)}`;
+        } else {
+            document.getElementById('recommend-list').innerHTML = `
+                <div class="empty-state">
+                    <div class="emoji">🤔</div>
+                    <h3>제품 정보를 불러올 수 없어요</h3>
+                    <p>홈에서 제품을 선택 후 추천을 확인해 주세요.</p>
+                </div>`;
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
