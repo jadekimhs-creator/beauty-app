@@ -377,3 +377,76 @@ h1, h2, h3, .app-logo { font-family: 'Outfit', sans-serif; text-transform: upper
     transition: var(--transition);
 }
 .theme-toggle:hover { opacity: 0.6; }
+
+/* ── Search ────────────────────────────────────────────────────────────── */
+.search-wrap {
+    margin-bottom: 48px;
+    position: relative;
+}
+.search-wrap input {
+    width: 100%;
+    padding: 16px 0;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    outline: none;
+    transition: var(--transition);
+}
+.search-wrap i {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    width: 18px;
+    pointer-events: none;
+}
+.search-wrap input:focus { border-bottom-color: var(--accent); }
+
+/* ── Forecast Timeline ─────────────────────────────────────────────────── */
+.forecast-section {
+    margin-bottom: 60px;
+}
+.forecast-section h3 {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+}
+.timeline-scroll {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    scrollbar-width: none;
+}
+.timeline-scroll::-webkit-scrollbar { display: none; }
+
+.timeline-tile {
+    min-width: 140px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    text-decoration: none;
+    color: inherit;
+}
+.timeline-tile .date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    display: block;
+}
+.timeline-tile .p-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.timeline-tile.danger { border-color: var(--danger); background: rgba(255,77,77,0.05); }

@@ -30,6 +30,18 @@
 
         <div id="insight-area"></div>
 
+        <div class="search-wrap">
+            <input type="text" id="search-input" placeholder="Search by name or brand...">
+            <i data-lucide="search"></i>
+        </div>
+
+        <div class="forecast-section">
+            <h3>Next 30 Days Forecast</h3>
+            <div class="timeline-scroll" id="timeline-scroll">
+                <!-- Timeline items will be injected here -->
+            </div>
+        </div>
+
         <div class="greeting">
             <h2 id="greeting-text">Collection</h2>
             <p id="greeting-sub">Your beauty inventory overview.</p>
@@ -72,33 +84,56 @@
 
         let currentCat = 'all';
         let sortAsc = true;
+        let searchQuery = '';
 
         async function render() {
             const listEl = document.getElementById('product-list');
-            listEl.innerHTML = '<div class="empty-state"><p>데이터 불러오는 중... 🔄</p></div>';
-
+            const timelineEl = document.getElementById('timeline-scroll');
             const all = await getProducts();
-            const filtered = currentCat === 'all' ? all : all.filter(p => p.category === currentCat);
+            
+            // 검색 필터링
+            const searched = all.filter(p => 
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()))
+            );
 
-            // 요약
-            document.getElementById('total-count').textContent = all.length;
-            document.getElementById('danger-count').textContent = all.filter(p => {
-                const d = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
-                return d >= 0 && d <= 7;
-            }).length;
-            document.getElementById('warn-count').textContent = all.filter(p => {
+            const filtered = currentCat === 'all' ? searched : searched.filter(p => p.category === currentCat);
+
+            // 통계 업데이트
+            const danger = all.filter(p => calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) <= 7).length;
+            const warn = all.filter(p => {
                 const d = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
                 return d > 7 && d <= 30;
             }).length;
 
-            // 인사 메시지
-            const danger = all.filter(p => calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) <= 7).length;
+            document.getElementById('total-count').textContent = all.length;
+            document.getElementById('danger-count').textContent = danger;
+            document.getElementById('warn-count').textContent = warn;
+
+            // 타임라인 생성 (다음 30일 이내 소진되는 제품들)
+            const timelineItems = all
+                .map(p => ({ ...p, daysLeft: calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) }))
+                .filter(p => p.daysLeft >= 0 && p.daysLeft <= 30)
+                .sort((a, b) => a.daysLeft - b.daysLeft);
+
+            if (timelineItems.length === 0) {
+                timelineEl.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); padding: 1rem;">No items depleting soon.</p>';
+            } else {
+                timelineEl.innerHTML = timelineItems.map(p => `
+                    <a href="detail.html?id=${p.id}" class="timeline-tile ${p.daysLeft <= 7 ? 'danger' : ''}">
+                        <span class="date">${p.daysLeft === 0 ? 'Today' : `In ${p.daysLeft} days`}</span>
+                        <div class="p-name">${p.name}</div>
+                    </a>
+                `).join('');
+            }
+
+            // 인사말 업데이트
             if (danger > 0) {
-                document.getElementById('greeting-text').textContent = `⚠️ ${danger}개 제품이 곧 소진돼요!`;
-                document.getElementById('greeting-sub').textContent = '얼른 재구매 링크를 확인해 보세요.';
-            } else if (all.length > 0) {
-                document.getElementById('greeting-text').textContent = '✅ 모든 제품 여유 있어요!';
-                document.getElementById('greeting-sub').textContent = '재구매 걱정 없는 하루 보내세요 🌸';
+                document.getElementById('greeting-text').textContent = `Action Required`;
+                document.getElementById('greeting-sub').textContent = `${danger} items are nearly empty.`;
+            } else {
+                document.getElementById('greeting-text').textContent = 'Collection';
+                document.getElementById('greeting-sub').textContent = 'Your beauty inventory overview.';
             }
 
             // 알림 배너
@@ -114,9 +149,7 @@
             if (sorted.length === 0) {
                 listEl.innerHTML = `
                 <div class="empty-state">
-                    <div class="emoji">🛍️</div>
-                    <h3>${currentCat === 'all' ? '아직 등록된 제품이 없어요' : '이 카테고리엔 제품이 없어요'}</h3>
-                    <p>+ 버튼을 눌러<br>사용 중인 화장품을 등록해 보세요!</p>
+                    <p style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">No results found</p>
                 </div>`;
             } else {
                 listEl.innerHTML = sorted.map(renderProductCard).join('');
@@ -124,6 +157,12 @@
 
             lucide.createIcons();
         }
+
+        // 검색 이벤트
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            render();
+        });
 
         // 탭 클릭
         document.querySelectorAll('.tab-chip').forEach(btn => {
