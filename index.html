@@ -75,6 +75,7 @@
         import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js';
 
         let currentCat = 'all';
+        let sortAsc = true;
 
         async function render() {
             const listEl = document.getElementById('product-list');
@@ -107,11 +108,12 @@
             // 알림 배너
             document.getElementById('alert-area').innerHTML = renderAlerts(all);
 
-            // 남은 일수 오름차순 정렬
-            const sorted = [...filtered].sort((a, b) =>
-                calcDaysLeft(a.openedAt, a.capacityMl, a.dailyUseMl) -
-                calcDaysLeft(b.openedAt, b.capacityMl, b.dailyUseMl)
-            );
+            // 정렬 적용
+            const sorted = [...filtered].sort((a, b) => {
+                const diffA = calcDaysLeft(a.openedAt, a.capacityMl, a.dailyUseMl);
+                const diffB = calcDaysLeft(b.openedAt, b.capacityMl, b.dailyUseMl);
+                return sortAsc ? diffA - diffB : diffB - diffA;
+            });
 
             if (sorted.length === 0) {
                 listEl.innerHTML = `
@@ -141,11 +143,10 @@
         render();
 
         // 필터 버튼 (정렬 전환)
-        let sortAsc = true;
         document.querySelector('.btn-filter').addEventListener('click', () => {
             sortAsc = !sortAsc;
-            const icon = document.querySelector('.btn-filter i');
-            icon.style.transform = sortAsc ? 'rotate(0deg)' : 'rotate(180deg)';
+            const icon = document.querySelector('.btn-filter i, .btn-filter svg');
+            if (icon) icon.style.transform = sortAsc ? 'rotate(0deg)' : 'rotate(180deg)';
             render();
         });
 
