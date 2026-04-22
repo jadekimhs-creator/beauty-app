@@ -1,4 +1,4 @@
-const CACHE_NAME = 'beauty-app-v1';
+const CACHE_NAME = 'beauty-app-v2';
 const STATIC_ASSETS = [
     './',
     'index.html',
