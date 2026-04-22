@@ -187,29 +187,29 @@ export function renderProductCard(p) {
         <div class="card-top">
             <div class="product-info">
                 <div class="product-name">${p.name}</div>
-                <div class="product-brand">${p.brand || '브랜드 미입력'}</div>
+                <div class="product-brand">${p.brand || '-'}</div>
             </div>
-            <span class="category-badge ${cat.color}">${cat.emoji} ${cat.label}</span>
+            <span class="category-badge">${cat.label}</span>
         </div>
-        <div class="days-badge ${daysClass}">
-            <span class="days-num">${daysText}</span>
-            ${daysLeft > 0 ? '<span class="days-label">남음</span>' : ''}
+        <div class="days-badge">
+            <span class="days-num">${daysLeft <= 0 ? '0' : daysLeft}</span>
+            <span class="days-label">${daysLeft <= 0 ? 'EMPTY' : 'DAYS'}</span>
         </div>
         <div class="progress-wrap">
-            <div class="progress-labels">
-                <span>남은 양 ${pct}%</span>
-                <span>소진 ${formatDate(runout)}</span>
-            </div>
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill ${fillClass}" style="width: ${pct}%"></div>
+            </div>
+            <div class="progress-labels">
+                <span>${pct}% REMAINING</span>
+                <span>${formatDate(runout)}</span>
             </div>
         </div>
         <div class="card-actions">
             <a class="btn-reorder" href="${coupangUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-                🛒 쿠팡 재구매
+                REORDER
             </a>
             <a class="btn-alt" href="recommend.html?id=${p.id}" onclick="event.stopPropagation()">
-                ✨ 다른 거?
+                EXPLORE
             </a>
         </div>
     </a>`;
@@ -228,25 +228,10 @@ export function renderAlerts(products) {
 
     let html = '';
     dangerous.forEach(p => {
-        const d = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
         html += `
         <div class="alert-banner">
-            <div class="alert-icon">🚨</div>
-            <div class="alert-text">
-                <h4>${p.name} 곧 소진!</h4>
-                <p>${d <= 0 ? '이미 소진됐어요. 얼른 재구매하세요!' : `${d}일 후 소진 예상 — 지금 주문하면 딱 맞아요!`}</p>
-            </div>
-        </div>`;
-    });
-    warning.forEach(p => {
-        const d = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
-        html += `
-        <div class="alert-banner warn">
-            <div class="alert-icon">⚠️</div>
-            <div class="alert-text">
-                <h4>${p.name} 슬슬 주문할까요?</h4>
-                <p>${d}일 후 소진 예상</p>
-            </div>
+            <h4>Depletion Alert</h4>
+            <p>${p.name} is approaching empty.</p>
         </div>`;
     });
     return html;

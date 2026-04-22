@@ -18,58 +18,47 @@
 <body>
 
     <div class="container">
-        <!-- Header -->
         <header class="header">
-            <div class="app-logo">💄 다 썼어<span>?</span></div>
-            <div class="btn-filter"><i data-lucide="sliders-horizontal" style="width:20px;"></i></div>
+            <div class="app-logo">Arch Beauty</div>
+            <button class="btn-filter"><i data-lucide="align-right"></i></button>
         </header>
 
-        <!-- Greeting -->
         <div class="greeting">
-            <h2 id="greeting-text">반가워요! ✨</h2>
-            <p id="greeting-sub">오늘도 아름다운 하루 보내세요.</p>
+            <h2 id="greeting-text">Collection</h2>
+            <p id="greeting-sub">Your beauty inventory overview.</p>
         </div>
 
-        <!-- Summary -->
         <div class="summary-cards">
             <div class="sum-card">
-                <span class="label">전체 제품</span>
-                <span class="value" id="total-count">0</span>
+                <span class="label">Items</span>
+                <div class="value" id="total-count">0</div>
             </div>
             <div class="sum-card">
-                <span class="label">소진 임박</span>
-                <span class="value" id="danger-count" style="color:var(--accent);">0</span>
+                <span class="label">Depleting</span>
+                <div class="value" id="danger-count">0</div>
             </div>
             <div class="sum-card">
-                <span class="label">주의</span>
-                <span class="value" id="warn-count" style="color:#f59e0b;">0</span>
+                <span class="label">Warning</span>
+                <div class="value" id="warn-count">0</div>
             </div>
         </div>
 
-        <!-- Alerts -->
-        <div class="alert-area" id="alert-area"></div>
-
-        <!-- Tabs -->
         <div class="tabs">
-            <div class="tab-chip active" data-cat="all">전체</div>
-            <div class="tab-chip" data-cat="skincare">🧴 스킨케어</div>
-            <div class="tab-chip" data-cat="hair">💇 헤어</div>
-            <div class="tab-chip" data-cat="body">🛁 바디</div>
-            <div class="tab-chip" data-cat="makeup">💄 메이크업</div>
+            <div class="tab-chip active" data-cat="all">All</div>
+            <div class="tab-chip" data-cat="skincare">Skincare</div>
+            <div class="tab-chip" data-cat="hair">Hair</div>
+            <div class="tab-chip" data-cat="body">Body</div>
+            <div class="tab-chip" data-cat="makeup">Makeup</div>
         </div>
 
-        <!-- Product List -->
+        <div id="alert-area"></div>
+
         <div class="product-list" id="product-list">
-            <div class="empty-state">
-                <p>데이터 불러오는 중... 🔄</p>
-            </div>
+            <p style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">Initializing gallery...</p>
         </div>
     </div>
 
-    <!-- FAB -->
-    <a class="fab" href="add.html" title="제품 추가">
-        <i data-lucide="plus"></i>
-    </a>
+    <a class="fab" href="add.html"><i data-lucide="plus"></i></a>
 
     <script type="module">
         import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js';

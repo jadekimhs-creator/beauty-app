@@ -54,66 +54,53 @@
 <body>
 
     <div class="container">
-        <!-- Header -->
         <header class="detail-header">
-            <a href="index.html" class="btn-circle" style="text-decoration:none;"><i data-lucide="chevron-left" style="width:20px; color:var(--text-sub);"></i></a>
-            <h1 id="detail-name" style="font-size:1.4rem; font-weight:700;">제품 정보</h1>
+            <a href="index.html" class="btn-back-text"><i data-lucide="arrow-left" style="width:14px;"></i> Return to Collection</a>
+            <h1 id="detail-name">Product Profile</h1>
         </header>
 
-        <!-- Donut Chart -->
         <div class="donut-chart">
-            <svg width="180" height="180">
-                <circle class="bg" cx="90" cy="90" r="50"></circle>
-                <circle class="fill" id="donut-fill" cx="90" cy="90" r="50" style="stroke-dasharray: 314.15; stroke-dashoffset: 314.15;"></circle>
+            <svg viewBox="0 0 120 120">
+                <circle class="bg" cx="60" cy="60" r="50"></circle>
+                <circle class="fill" id="donut-fill" cx="60" cy="60" r="50" style="stroke-dashoffset: 314;"></circle>
             </svg>
             <div class="donut-text">
                 <span class="pct" id="donut-pct">0%</span>
-                <span class="label" id="donut-sub">분석 중</span>
+                <span class="label">Remaining</span>
             </div>
         </div>
 
-        <!-- Detail Info -->
         <div class="detail-info">
             <div class="info-row">
-                <span class="label">브랜드</span>
+                <span class="label">Brand</span>
                 <span class="value" id="d-brand">-</span>
             </div>
             <div class="info-row">
-                <span class="label">카테고리</span>
+                <span class="label">Classification</span>
                 <span class="value" id="d-cat">-</span>
             </div>
             <div class="info-row">
-                <span class="label">전체 용량</span>
+                <span class="label">Volume</span>
                 <span class="value" id="d-cap">-</span>
             </div>
             <div class="info-row">
-                <span class="label">1일 사용량</span>
-                <span class="value" id="d-daily">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">개봉일</span>
+                <span class="label">Opening Date</span>
                 <span class="value" id="d-opened">-</span>
             </div>
             <div class="info-row">
-                <span class="label">소진 예상</span>
-                <span class="value" id="d-runout" style="color:var(--accent);">-</span>
+                <span class="label">Projected Runout</span>
+                <span class="value" id="d-runout" style="color:var(--text);">-</span>
             </div>
             <div class="info-row">
-                <span class="label">남은 일수</span>
+                <span class="label">Days Remaining</span>
                 <span class="value" id="d-days">-</span>
             </div>
         </div>
 
-        <!-- Buttons -->
-        <div style="display:flex; flex-direction:column; gap:12px;">
-            <a id="btn-coupang" href="#" target="_blank" class="btn-save" style="margin-top:0; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <i data-lucide="shopping-cart" style="width:20px;"></i> 쿠팡에서 재구매
-            </a>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <a id="btn-edit" href="#" class="btn-alt" style="padding:16px; border-radius:18px; text-decoration:none;">편집하기</a>
-                <button id="btn-delete" class="btn-alt" style="padding:16px; border-radius:18px; color:#ef4444; border:none; cursor:pointer;">삭제하기</button>
-            </div>
+        <a id="btn-coupang" href="#" target="_blank" class="btn-primary">Replenish Now</a>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <a id="btn-edit" href="#" class="btn-secondary-outline" style="text-decoration:none;">Modify</a>
+            <button id="btn-delete" class="btn-secondary-outline" style="color:var(--danger); border-color:var(--danger); background:none; cursor:pointer;">Remove</button>
         </div>
     </div>
 
