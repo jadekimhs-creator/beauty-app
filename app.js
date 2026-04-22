@@ -36,6 +36,17 @@ function getProductById(id) {
     return getProducts().find(p => p.id === id);
 }
 
+function resetToSamples() {
+    const samples = [
+        { name: '설화수 퍼펙팅 세럼', brand: '설화수', category: 'skincare', capacityMl: 60, dailyUseMl: 0.8, openedAt: '2026-03-01', coupangUrl: '' },
+        { name: '판테닌 샴푸', brand: '판텐', category: 'hair', capacityMl: 400, dailyUseMl: 8, openedAt: '2026-03-15', coupangUrl: '' },
+        { name: '에스트라 아토베리어 크림', brand: '에스트라', category: 'skincare', capacityMl: 80, dailyUseMl: 1.2, openedAt: '2026-04-01', coupangUrl: '' },
+        { name: '니베아 바디로션', brand: '니베아', category: 'body', capacityMl: 250, dailyUseMl: 5, openedAt: '2026-04-10', coupangUrl: '' },
+    ];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    samples.forEach(s => addProduct(s));
+}
+
 // ── 날짜 계산 ─────────────────────────────────────────────────────────────
 /**
  * 소진 예상일 계산

@@ -7,7 +7,8 @@ const STATIC_ASSETS = [
     '/recommend.html',
     '/style.css',
     '/app.js',
-    '/supabaseClient.js',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png',
 ];
 
 // ── 설치: 정적 파일 캐시 ──────────────────────────────────────────────────

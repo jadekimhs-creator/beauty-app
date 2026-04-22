@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#EC4899">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="다 썼어?">
     <link rel="stylesheet" href="style.css">
@@ -154,6 +154,16 @@
             });
             document.querySelector('.product-list').after(demo);
         }
+
+        // ── 관리자 모드 트리거 (로고 5번 클릭) ─────────────────────────────
+        let logoClicks = 0;
+        document.querySelector('.app-logo').addEventListener('click', () => {
+            logoClicks++;
+            if (logoClicks >= 5) {
+                location.href = 'admin.html';
+            }
+            setTimeout(() => { logoClicks = 0; }, 2000);
+        });
 
         // ── PWA Service Worker + 알림 초기화 ─────────────────────────────
         (async () => {
