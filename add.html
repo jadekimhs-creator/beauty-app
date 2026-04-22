@@ -84,8 +84,9 @@
     <!-- 저장 버튼 -->
     <button class="btn-save" id="save-btn">💾 저장하기</button>
 
-    <script src="app.js"></script>
-    <script>
+    <script type="module">
+        import { getProductById, addProduct, updateProduct, calcDaysLeft, calcRunoutDate, formatDate } from './app.js';
+
         // 오늘 날짜 기본값
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('openedAt').value = today;
@@ -96,23 +97,27 @@
         // URL 파라미터로 수정 모드 감지
         const urlParams = new URLSearchParams(window.location.search);
         editId = urlParams.get('edit');
-        if (editId) {
-            document.getElementById('page-title').textContent = '제품 수정';
-            document.getElementById('save-btn').textContent = '✏️ 수정 완료';
-            const p = getProductById(editId);
-            if (p) {
-                document.getElementById('name').value = p.name;
-                document.getElementById('brand').value = p.brand || '';
-                document.getElementById('capacity').value = p.capacityMl;
-                document.getElementById('dailyUse').value = p.dailyUseMl;
-                document.getElementById('openedAt').value = p.openedAt;
-                document.getElementById('coupangUrl').value = p.coupangUrl || '';
-                selectedCat = p.category;
-                document.querySelectorAll('.cat-btn').forEach(b => {
-                    b.classList.toggle('active', b.dataset.cat === selectedCat);
-                });
+        
+        (async () => {
+            if (editId) {
+                document.getElementById('page-title').textContent = '제품 수정';
+                document.getElementById('save-btn').textContent = '✏️ 수정 완료';
+                const p = await getProductById(editId);
+                if (p) {
+                    document.getElementById('name').value = p.name;
+                    document.getElementById('brand').value = p.brand || '';
+                    document.getElementById('capacity').value = p.capacityMl;
+                    document.getElementById('dailyUse').value = p.dailyUseMl;
+                    document.getElementById('openedAt').value = p.openedAt;
+                    document.getElementById('coupangUrl').value = p.coupangUrl || '';
+                    selectedCat = p.category;
+                    document.querySelectorAll('.cat-btn').forEach(b => {
+                        b.classList.toggle('active', b.dataset.cat === selectedCat);
+                    });
+                    updatePreview();
+                }
             }
-        }
+        })();
 
         // 카테고리 선택
         document.querySelectorAll('.cat-btn').forEach(btn => {
@@ -155,7 +160,7 @@
         });
 
         // 저장
-        document.getElementById('save-btn').addEventListener('click', () => {
+        document.getElementById('save-btn').addEventListener('click', async () => {
             const name = document.getElementById('name').value.trim();
             const capacity = parseFloat(document.getElementById('capacity').value);
             const dailyUse = parseFloat(document.getElementById('dailyUse').value);
@@ -165,6 +170,9 @@
             if (!capacity || capacity <= 0) return alert('전체 용량을 입력해주세요.');
             if (!dailyUse || dailyUse <= 0) return alert('1일 사용량을 입력해주세요.');
             if (!openedAt) return alert('개봉일을 선택해주세요.');
+
+            document.getElementById('save-btn').disabled = true;
+            document.getElementById('save-btn').textContent = '⏳ 저장 중...';
 
             const product = {
                 name,
@@ -177,16 +185,15 @@
             };
 
             if (editId) {
-                updateProduct(editId, product);
+                await updateProduct(editId, product);
             } else {
-                addProduct(product);
+                await addProduct(product);
             }
 
             window.location.href = 'index.html';
         });
 
         lucide.createIcons();
-        updatePreview();
     </script>
 </body>
 </html>

@@ -127,65 +127,70 @@
         </button>
     </div>
 
-    <script src="app.js"></script>
-    <script>
-        const id = new URLSearchParams(window.location.search).get('id');
-        const p = getProductById(id);
+    <script type="module">
+        import { getProductById, deleteProduct, calcDaysLeft, calcRemainingPct, calcRunoutDate, getStatus, getCatInfo, formatDate } from './app.js';
 
-        if (!p) {
-            alert('제품을 찾을 수 없습니다.');
-            location.href = 'index.html';
-        }
+        (async () => {
+            const id = new URLSearchParams(window.location.search).get('id');
+            const p = await getProductById(id);
 
-        const daysLeft = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
-        const pct = calcRemainingPct(p.openedAt, p.capacityMl, p.dailyUseMl);
-        const runout = calcRunoutDate(p.openedAt, p.capacityMl, p.dailyUseMl);
-        const cat = getCatInfo(p.category);
-        const status = getStatus(daysLeft);
-
-        // 페이지 타이틀
-        document.getElementById('detail-name').textContent = p.name;
-
-        // 도넛 차트
-        const circumference = 2 * Math.PI * 50; // ~314
-        const offset = circumference * (1 - pct / 100);
-        const donutFill = document.getElementById('donut-fill');
-        setTimeout(() => { donutFill.style.strokeDashoffset = offset; }, 100);
-
-        if (status === 'danger') donutFill.style.stroke = '#EF4444';
-        else if (status === 'warn') donutFill.style.stroke = '#F59E0B';
-
-        document.getElementById('donut-pct').textContent = `${pct}%`;
-        document.getElementById('donut-sub').textContent =
-            daysLeft <= 0 ? '소진됨' :
-            status === 'danger' ? '🚨 위험!' :
-            status === 'warn' ? '⚡ 주의' : '✅ 여유 있음';
-
-        // 상세 정보
-        document.getElementById('d-brand').textContent = p.brand || '-';
-        document.getElementById('d-cat').textContent = `${cat.emoji} ${cat.label}`;
-        document.getElementById('d-cap').textContent = `${p.capacityMl}ml`;
-        document.getElementById('d-daily').textContent = `${p.dailyUseMl}ml/일`;
-        document.getElementById('d-opened').textContent = formatDate(p.openedAt);
-        document.getElementById('d-runout').textContent = formatDate(runout);
-        document.getElementById('d-days').textContent =
-            daysLeft <= 0 ? '이미 소진' : `${daysLeft}일 남음`;
-
-        // 버튼 링크
-        const coupangUrl = p.coupangUrl || coupangSearchUrl(`${p.brand || ''} ${p.name}`);
-        document.getElementById('btn-coupang').href = coupangUrl;
-        document.getElementById('btn-recommend').href = `recommend.html?id=${id}`;
-        document.getElementById('btn-edit').href = `add.html?edit=${id}`;
-
-        // 삭제
-        document.getElementById('btn-delete').addEventListener('click', () => {
-            if (confirm(`"${p.name}"을(를) 삭제할까요?`)) {
-                deleteProduct(id);
+            if (!p) {
+                alert('제품을 찾을 수 없습니다.');
                 location.href = 'index.html';
+                return;
             }
-        });
 
-        lucide.createIcons();
+            const daysLeft = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
+            const pct = calcRemainingPct(p.openedAt, p.capacityMl, p.dailyUseMl);
+            const runout = calcRunoutDate(p.openedAt, p.capacityMl, p.dailyUseMl);
+            const cat = getCatInfo(p.category);
+            const status = getStatus(daysLeft);
+
+            // 페이지 타이틀
+            document.getElementById('detail-name').textContent = p.name;
+
+            // 도넛 차트
+            const circumference = 2 * Math.PI * 50; // ~314
+            const offset = circumference * (1 - pct / 100);
+            const donutFill = document.getElementById('donut-fill');
+            setTimeout(() => { donutFill.style.strokeDashoffset = offset; }, 100);
+
+            if (status === 'danger') donutFill.style.stroke = '#EF4444';
+            else if (status === 'warn') donutFill.style.stroke = '#F59E0B';
+
+            document.getElementById('donut-pct').textContent = `${pct}%`;
+            document.getElementById('donut-sub').textContent =
+                daysLeft <= 0 ? '소진됨' :
+                status === 'danger' ? '🚨 위험!' :
+                status === 'warn' ? '⚡ 주의' : '✅ 여유 있음';
+
+            // 상세 정보
+            document.getElementById('d-brand').textContent = p.brand || '-';
+            document.getElementById('d-cat').textContent = `${cat.emoji} ${cat.label}`;
+            document.getElementById('d-cap').textContent = `${p.capacityMl}ml`;
+            document.getElementById('d-daily').textContent = `${p.dailyUseMl}ml/일`;
+            document.getElementById('d-opened').textContent = formatDate(p.openedAt);
+            document.getElementById('d-runout').textContent = formatDate(runout);
+            document.getElementById('d-days').textContent =
+                daysLeft <= 0 ? '이미 소진' : `${daysLeft}일 남음`;
+
+            // 버튼 링크
+            const coupangSearchUrl = (q) => `https://www.coupang.com/np/search?q=${encodeURIComponent(q)}`;
+            const coupangUrl = p.coupangUrl || coupangSearchUrl(`${p.brand || ''} ${p.name}`);
+            document.getElementById('btn-coupang').href = coupangUrl;
+            document.getElementById('btn-recommend').href = `recommend.html?id=${id}`;
+            document.getElementById('btn-edit').href = `add.html?edit=${id}`;
+
+            // 삭제
+            document.getElementById('btn-delete').addEventListener('click', async () => {
+                if (confirm(`"${p.name}"을(를) 삭제할까요?`)) {
+                    await deleteProduct(id);
+                    location.href = 'index.html';
+                }
+            });
+
+            lucide.createIcons();
+        })();
     </script>
 </body>
 </html>

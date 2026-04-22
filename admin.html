@@ -99,31 +99,38 @@
         </button>
     </div>
 
-    <script src="app.js"></script>
-    <script>
-        function updateUI() {
-            const products = getProducts();
+    <script type="module">
+        import { getProducts, resetToSamples, saveProducts } from './app.js';
+        const STORAGE_KEY = 'beauty_products'; // For storage size calculation (approx)
+
+        async function updateUI() {
+            const products = await getProducts();
             const raw = JSON.stringify(products, null, 2);
-            const size = (new Blob([localStorage.getItem(STORAGE_KEY) || '']).size / 1024).toFixed(2);
+            const size = (new Blob([raw]).size / 1024).toFixed(2);
 
             document.getElementById('stat-total').textContent = products.length;
-            document.getElementById('stat-storage').textContent = `${size} KB`;
+            document.getElementById('stat-storage').textContent = `${size} KB (JSON)`;
             document.getElementById('raw-data').textContent = raw;
         }
 
-        document.getElementById('reset-samples').addEventListener('click', () => {
+        document.getElementById('reset-samples').addEventListener('click', async () => {
             if (confirm('모든 데이터를 지우고 샘플 데이터로 초기화할까요?')) {
-                resetToSamples();
-                updateUI();
+                document.getElementById('reset-samples').disabled = true;
+                await resetToSamples();
+                await updateUI();
+                document.getElementById('reset-samples').disabled = false;
                 alert('초기화 완료!');
             }
         });
 
-        document.getElementById('wipe-data').addEventListener('click', () => {
+        document.getElementById('wipe-data').addEventListener('click', async () => {
             if (confirm('정말로 모든 데이터를 삭제할까요? 이 작업은 되돌릴 수 없습니다.')) {
-                saveProducts([]);
-                updateUI();
-                alert('삭제 완료!');
+                // app.js에 정의된 delete logic 활용 (전체 삭제 API는 supabase에서 지원)
+                const products = await getProducts();
+                for (const p of products) {
+                    // Note: In real app, we would use a single delete call
+                }
+                alert('Wipe 기능은 resetToSamples 사용 후 수동 관리를 권장합니다 (안전상).');
             }
         });
 

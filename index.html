@@ -69,12 +69,16 @@
     <!-- FAB: 제품 추가 버튼 -->
     <a class="fab" href="add.html" title="제품 추가">+</a>
 
-    <script src="app.js"></script>
-    <script>
+    <script type="module">
+        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js';
+
         let currentCat = 'all';
 
-        function render() {
-            const all = getProducts();
+        async function render() {
+            const listEl = document.getElementById('product-list');
+            listEl.innerHTML = '<div class="empty-state"><p>데이터 불러오는 중... 🔄</p></div>';
+
+            const all = await getProducts();
             const filtered = currentCat === 'all' ? all : all.filter(p => p.category === currentCat);
 
             // 요약
@@ -100,9 +104,6 @@
 
             // 알림 배너
             document.getElementById('alert-area').innerHTML = renderAlerts(all);
-
-            // 제품 목록
-            const listEl = document.getElementById('product-list');
 
             // 남은 일수 오름차순 정렬
             const sorted = [...filtered].sort((a, b) =>
@@ -137,25 +138,6 @@
         // 초기 렌더링
         render();
 
-        // (데모) 샘플 데이터 없을 때 시뮬레이션 버튼
-        if (getProducts().length === 0) {
-            const demo = document.createElement('button');
-            demo.textContent = '🧪 샘플 데이터로 체험해보기';
-            demo.style.cssText = 'display:block;margin:20px auto;padding:12px 24px;border-radius:12px;border:none;background:var(--pink-soft);color:var(--pink-accent);font-weight:700;cursor:pointer;font-size:0.9rem;';
-            demo.addEventListener('click', () => {
-                const samples = [
-                    { name: '설화수 퍼펙팅 세럼', brand: '설화수', category: 'skincare', capacityMl: 60, dailyUseMl: 0.8, openedAt: '2026-03-01', coupangUrl: '' },
-                    { name: '판테닌 샴푸', brand: '판텐', category: 'hair', capacityMl: 400, dailyUseMl: 8, openedAt: '2026-03-15', coupangUrl: '' },
-                    { name: '에스트라 아토베리어 크림', brand: '에스트라', category: 'skincare', capacityMl: 80, dailyUseMl: 1.2, openedAt: '2026-04-01', coupangUrl: '' },
-                    { name: '니베아 바디로션', brand: '니베아', category: 'body', capacityMl: 250, dailyUseMl: 5, openedAt: '2026-04-10', coupangUrl: '' },
-                ];
-                samples.forEach(s => addProduct(s));
-                render();
-                demo.remove();
-            });
-            document.querySelector('.product-list').after(demo);
-        }
-
         // ── 관리자 모드 트리거 (로고 5번 클릭) ─────────────────────────────
         let logoClicks = 0;
         document.querySelector('.app-logo').addEventListener('click', () => {
@@ -170,29 +152,6 @@
         (async () => {
             if ('serviceWorker' in navigator) {
                 try { await navigator.serviceWorker.register('sw.js'); } catch(e) {}
-            }
-
-            // 알림 권한 배너 (최초 1회)
-            if ('Notification' in window && Notification.permission === 'default') {
-                const banner = document.createElement('div');
-                banner.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1F1235;color:#fff;padding:14px 20px;border-radius:14px;font-size:0.85rem;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:200;max-width:340px;width:90%;';
-                banner.innerHTML = `
-                    <span>🔔 소진 임박 알림을 받아볼까요?</span>
-                    <button id="allow-notif" style="background:#EC4899;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">📱 허용</button>
-                    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:1.2rem;flex-shrink:0;">✕</button>
-                `;
-                document.body.appendChild(banner);
-                document.getElementById('allow-notif').addEventListener('click', async () => {
-                    const perm = await Notification.requestPermission();
-                    banner.remove();
-                    if (perm === 'granted') {
-                        new Notification('💄 다 썼어?', {
-                            body: '소진 임박 알림이 설정되었어요!',
-                            icon: 'icons/icon-192.png',
-                        });
-                    }
-                });
-                setTimeout(() => banner?.remove(), 10000);
             }
         })();
     </script>
