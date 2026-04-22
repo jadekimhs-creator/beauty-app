@@ -30,16 +30,23 @@ function toSnake(p) {
 
 // ── Supabase 데이터 관리 ──────────────────────────────────────────────────
 export async function getProducts() {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('opened_at', { ascending: false });
-    
-    if (error) {
-        console.error('Error fetching products:', error);
+    try {
+        console.log('Fetching products from Supabase...');
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('opened_at', { ascending: false });
+        
+        if (error) {
+            console.error('Supabase Error:', error.message, error.details, error.hint);
+            return [];
+        }
+        console.log('Successfully fetched products:', data.length, 'items');
+        return data.map(toCamel);
+    } catch (err) {
+        console.error('Unexpected Fetch Error:', err);
         return [];
     }
-    return data.map(toCamel);
 }
 
 export async function addProduct(product) {
