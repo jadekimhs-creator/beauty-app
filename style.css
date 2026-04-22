@@ -8,15 +8,28 @@
     --border: #eeeeee;
     --accent: #111111;
     --danger: #ff4d4d;
-    --warn: #ffcc00;
-    --safe: #00cc66;
-    
-    --radius: 0px; /* Sharp corners for architectural feel, or very small radius */
+    --radius: 0px;
     --radius-soft: 8px;
-    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[data-theme="dark"] {
+    --bg: #0a0a0a;
+    --bg-alt: #141414;
+    --text: #f0f0f0;
+    --text-muted: #666666;
+    --border: #222222;
+    --accent: #ffffff;
+    --danger: #ff5555;
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+}
 
 body {
     font-family: 'Inter', sans-serif;
@@ -317,3 +330,50 @@ h1, h2, h3, .app-logo { font-family: 'Outfit', sans-serif; text-transform: upper
 }
 .alert-banner h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--danger); }
 .alert-banner p { font-size: 0.85rem; color: var(--text); margin-top: 4px; }
+
+/* ── Insight Card ───────────────────────────────────────────────────────── */
+.insight-card {
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+}
+.insight-card::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    font-size: 8rem;
+    font-family: 'Outfit';
+    color: var(--border);
+    opacity: 0.5;
+    line-height: 1;
+}
+.insight-card .quote {
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+}
+.insight-card .author {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+.theme-toggle:hover { opacity: 0.6; }
