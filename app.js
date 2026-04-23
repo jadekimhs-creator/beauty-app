@@ -254,4 +254,11 @@ export function renderAlerts(products) {
     return html;
 }
 window.renderAlerts = renderAlerts;
+export async function getAllProducts() {
+    const { supabase } = await import('./supabaseClient.js');
+    const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    if (error) return [];
+    return data.map(toCamel);
+}
+
 export { getAllProducts };

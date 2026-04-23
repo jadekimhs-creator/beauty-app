@@ -193,7 +193,7 @@
                 <tr>
                     <td><b>${pr.email}</b></td>
                     <td>${userProductCount[pr.id] || 0}개</td>
-                    <td style="color:var(--text-sub); font-size:0.75rem;">${pr.lastLoginAt ? new Date(pr.lastLoginAt).toLocaleString() : '-'}</td>
+                    <td style="color:var(--text-sub); font-size:0.75rem;">${pr.last_login_at ? new Date(pr.last_login_at).toLocaleString() : '-'}</td>
                 </tr>
             `).join('');
 
