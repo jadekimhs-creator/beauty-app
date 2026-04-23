@@ -24,6 +24,7 @@
                 <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
                     <i data-lucide="moon"></i>
                 </button>
+                <button class="btn-filter" id="btn-logout" title="Logout"><i data-lucide="log-out"></i></button>
                 <button class="btn-filter"><i data-lucide="align-right"></i></button>
             </div>
         </header>
@@ -81,6 +82,7 @@
 
     <script type="module">
         import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js';
+        import { signOut } from './supabaseClient.js';
 
         let currentCat = 'all';
         let sortAsc = true;
@@ -183,6 +185,14 @@
             const icon = document.querySelector('.btn-filter i, .btn-filter svg');
             if (icon) icon.style.transform = sortAsc ? 'rotate(0deg)' : 'rotate(180deg)';
             render();
+        });
+
+        // 로그아웃
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                await signOut();
+                location.href = 'login.html';
+            }
         });
 
         // ── 관리자 모드 트리거 (로고 5번 클릭) ─────────────────────────────

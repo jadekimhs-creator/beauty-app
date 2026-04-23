@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 | 다 썼어?</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+        }
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+        }
+        .login-card {
+            background: var(--bg-alt);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        .login-card h1 {
+            font-size: 1.5rem;
+            margin-bottom: 32px;
+            color: var(--text);
+        }
+        .form-group { text-align: left; }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .divider::before, .divider::after {
+            content: ""; flex: 1; border-bottom: 1px solid var(--border);
+        }
+        .divider span { padding: 0 10px; }
+        .btn-social {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-alt);
+            color: var(--text);
+            font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; margin-bottom: 12px;
+            transition: var(--transition);
+        }
+        .btn-social:hover { background: var(--bg); border-color: var(--text-muted); }
+        .toggle-mode {
+            margin-top: 24px; font-size: 0.85rem; color: var(--text-muted);
+        }
+        .toggle-mode a { color: var(--purple-accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+        .footer-terms {
+            margin-top: 24px; font-size: 0.7rem; color: var(--text-muted); line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h1 id="form-title">계정 생성하기</h1>
+        
+        <form id="auth-form">
+            <div class="form-group">
+                <input type="email" id="email" placeholder="이메일" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="비밀번호" required minlength="6">
+            </div>
+            
+            <button type="submit" class="btn-primary" id="submit-btn" style="padding: 16px;">계정 생성</button>
+        </form>
+
+        <div class="toggle-mode">
+            <span id="toggle-text">이미 계정이 있나요?</span> <a id="toggle-btn">로그인</a>
+        </div>
+
+        <div class="divider"><span>또는</span></div>
+
+        <button class="btn-social" onclick="alert('소셜 로그인은 준비 중입니다.')">
+            <i data-lucide="github"></i> GitHub 계속
+        </button>
+        <button class="btn-social" onclick="alert('소셜 로그인은 준비 중입니다.')">
+            <i data-lucide="chrome"></i> Google 계속
+        </button>
+
+        <div class="footer-terms">
+            계속 진행하면 이용약관 그리고 개인정보처리방침에 동의하는 것입니다.
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase, signUp, signIn } from './supabaseClient.js';
+
+        // 이미 로그인된 경우 메인으로 이동
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            window.location.href = 'index.html';
+        }
+
+        let isLoginMode = false;
+        const formTitle = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleText = document.getElementById('toggle-text');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const form = document.getElementById('auth-form');
+
+        toggleBtn.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                formTitle.textContent = '로그인';
+                submitBtn.textContent = '로그인';
+                toggleText.textContent = '계정이 없으신가요?';
+                toggleBtn.textContent = '계정 생성';
+            } else {
+                formTitle.textContent = '계정 생성하기';
+                submitBtn.textContent = '계정 생성';
+                toggleText.textContent = '이미 계정이 있나요?';
+                toggleBtn.textContent = '로그인';
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = '처리 중...';
+
+            if (isLoginMode) {
+                const { error } = await signIn(email, password);
+                if (error) {
+                    alert('로그인 실패: ' + error.message);
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                const { error } = await signUp(email, password);
+                if (error) {
+                    alert('회원가입 실패: ' + error.message);
+                } else {
+                    alert('가입 성공! 메일함을 확인하거나 다시 로그인해주세요.');
+                    isLoginMode = true;
+                    toggleBtn.click(); // 로그인 모드로 전환
+                }
+            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = isLoginMode ? '로그인' : '계정 생성';
+        });
+
+        // Theme init
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        lucide.createIcons();
+    </script>
+</body>
+</html>

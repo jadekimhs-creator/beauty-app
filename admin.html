@@ -249,6 +249,27 @@
             </div>
         </div>
 
+        <!-- Users Table -->
+        <div class="card">
+            <div class="card-header">
+                <h2>전체 사용자 계정</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>가입 이메일</th>
+                            <th>권한</th>
+                            <th>가입일시</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-tbody">
+                        <tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-sub);">조회 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Raw Data Preview -->
         <div class="card">
             <div class="card-header">
@@ -270,6 +291,14 @@
 
     <script type="module">
         import { getProducts, deleteProduct, resetToSamples, calcRemainingPct } from './app.js';
+        import { getUserProfile, getProfiles } from './supabaseClient.js';
+
+        // 어드민 권한 체크
+        const profile = await getUserProfile();
+        if (!profile || profile.role !== 'admin') {
+            alert('접근 권한이 없습니다. (어드민 전용)');
+            window.location.href = 'index.html';
+        }
 
         async function refreshData() {
             const spinner = document.getElementById('loading-spinner');
@@ -317,6 +346,26 @@
             }
 
             spinner.style.display = 'none';
+
+            // 유저 목록 렌더링
+            const profiles = await getProfiles();
+            const utbody = document.getElementById('user-tbody');
+            if (profiles.length === 0) {
+                utbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--text-sub);">사용자가 없습니다.</td></tr>';
+            } else {
+                utbody.innerHTML = profiles.map(pr => {
+                    const dateStr = new Date(pr.created_at).toLocaleString('ko-KR');
+                    const roleBadge = pr.role === 'admin' ? '<span class="badge" style="background:#fee2e2; color:#ef4444;">Admin</span>' : '<span class="badge" style="background:#f1f5f9; color:#64748b;">User</span>';
+                    return `
+                    <tr>
+                        <td style="font-weight:600;">${pr.email}</td>
+                        <td>${roleBadge}</td>
+                        <td style="color:var(--text-sub);">${dateStr}</td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+
             lucide.createIcons();
         }
 

@@ -1,4 +1,11 @@
-import { supabase } from './supabaseClient.js';
+import { supabase, getCurrentUser } from './supabaseClient.js';
+
+// 전역 인증 체크 (login.html 제외)
+const user = await getCurrentUser();
+const currentPath = window.location.pathname;
+if (!user && !currentPath.includes('login.html') && !currentPath.includes('admin.html')) {
+    window.location.href = 'login.html';
+}
 
 // ── 데이터 변환 헬퍼 (snake_case <-> camelCase) ───────────────────────────
 function toCamel(p) {
@@ -43,9 +50,15 @@ export async function getProducts() {
 }
 
 export async function addProduct(product) {
+    const user = await getCurrentUser();
+    if (!user) return null;
+
+    const payload = toSnake(product);
+    payload.user_id = user.id;
+
     const { data, error } = await supabase
         .from('products')
-        .insert([toSnake(product)])
+        .insert([payload])
         .select();
     
     if (error) {
