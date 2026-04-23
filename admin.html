@@ -105,10 +105,40 @@
 
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
         .badge.skincare { background: #fee2e2; color: #ef4444; }
+
+        /* Clickable User Rows */
+        #user-tbody tr { cursor: pointer; transition: background 0.2s; }
+        #user-tbody tr:hover { background: rgba(236, 72, 153, 0.05); }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-card {
+            background: white; width: 90%; max-width: 600px; border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden;
+            animation: modalScale 0.3s ease-out;
+        }
+        @keyframes modalScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            padding: 24px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
+        .user-product-item {
+            display: flex; justify-content: space-between; padding: 12px;
+            background: #f8fafc; border-radius: 12px; margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 기존 내용 ... -->
         <header>
             <a href="index.html" class="btn-back"><i data-lucide="chevron-left"></i> 돌아가기</a>
             <div class="title-group">
@@ -124,10 +154,9 @@
         </div>
 
         <div class="admin-grid">
-            <!-- Left: Main Lists -->
             <div class="main-content">
                 <div class="card">
-                    <div class="card-header"><h2><i data-lucide="users"></i> 사용자 계정 및 활동</h2></div>
+                    <div class="card-header"><h2><i data-lucide="users"></i> 사용자 계정 및 활동 (클릭하여 상세 조회)</h2></div>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -151,7 +180,6 @@
                 </div>
             </div>
 
-            <!-- Right: Insights & Announcements -->
             <div class="side-content">
                 <div class="card">
                     <div class="card-header"><h2><i data-lucide="bar-chart-3"></i> 인기 브랜드 TOP 5</h2></div>
@@ -170,36 +198,52 @@
         </div>
     </div>
 
+    <!-- User Details Modal -->
+    <div id="user-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-user-email" style="font-size: 1.2rem; color: var(--primary);">User Inventory</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-sub);">사용자가 등록한 제품 리스트입니다.</p>
+                </div>
+                <button onclick="window.closeModal()" style="background:none; border:none; cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body" id="modal-product-list">
+                <!-- Products will be injected here -->
+            </div>
+        </div>
+    </div>
+
     <script type="module">
-        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=20260423_02';
-        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=20260423_02';
+        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=20260423_03';
+        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=20260423_03';
 
         const profile = await getUserProfile();
         if (!profile || profile.role !== 'admin') { window.location.href = 'index.html'; }
 
+        let allProducts = [];
+
         async function refresh() {
-            const products = await getAllProducts();
+            allProducts = await getAllProducts();
             const profiles = await getProfiles();
             const announces = await getAnnouncements();
 
-            // Stats
             document.getElementById('stat-users').textContent = profiles.length;
-            document.getElementById('stat-total').textContent = products.length;
+            document.getElementById('stat-total').textContent = allProducts.length;
 
-            // User Table
             const userProductCount = {};
-            products.forEach(p => userProductCount[p.userId] = (userProductCount[p.userId] || 0) + 1);
+            allProducts.forEach(p => userProductCount[p.userId] = (userProductCount[p.userId] || 0) + 1);
+            
             document.getElementById('user-tbody').innerHTML = profiles.map(pr => `
-                <tr>
+                <tr onclick="window.showUserDetails('${pr.id}', '${pr.email}')">
                     <td><b>${pr.email}</b></td>
                     <td>${userProductCount[pr.id] || 0}개</td>
                     <td style="color:var(--text-sub); font-size:0.75rem;">${pr.last_login_at ? new Date(pr.last_login_at).toLocaleString() : '-'}</td>
                 </tr>
             `).join('');
 
-            // Product Table
             const userMap = {}; profiles.forEach(pr => userMap[pr.id] = pr.email);
-            document.getElementById('product-tbody').innerHTML = products.map(p => `
+            document.getElementById('product-tbody').innerHTML = allProducts.map(p => `
                 <tr>
                     <td>${p.name}</td>
                     <td style="font-size:0.75rem;">${userMap[p.userId] || '-'}</td>
@@ -208,9 +252,8 @@
                 </tr>
             `).join('');
 
-            // Brand Insight
             const brandCount = {};
-            products.forEach(p => { if(p.brand) brandCount[p.brand] = (brandCount[p.brand] || 0) + 1; });
+            allProducts.forEach(p => { if(p.brand) brandCount[p.brand] = (brandCount[p.brand] || 0) + 1; });
             const topBrands = Object.entries(brandCount).sort((a,b) => b[1]-a[1]).slice(0, 5);
             document.getElementById('brand-insight').innerHTML = topBrands.map(([name, count]) => `
                 <div class="insight-item">
@@ -219,7 +262,6 @@
                 </div>
             `).join('') || '<p style="padding:20px; color:var(--text-sub); text-align:center;">데이터 없음</p>';
 
-            // Announcements
             document.getElementById('announce-list').innerHTML = announces.map(a => `
                 <div class="announce-item">
                     <span style="font-size:0.85rem;">${a.content}</span>
@@ -229,6 +271,36 @@
 
             lucide.createIcons();
         }
+
+        window.showUserDetails = (userId, email) => {
+            const userProducts = allProducts.filter(p => p.userId === userId);
+            document.getElementById('modal-user-email').textContent = email;
+            const listEl = document.getElementById('modal-product-list');
+            
+            if (userProducts.length === 0) {
+                listEl.innerHTML = '<p style="text-align:center; color:var(--text-sub); padding: 40px;">등록된 제품이 없습니다.</p>';
+            } else {
+                listEl.innerHTML = userProducts.map(p => `
+                    <div class="user-product-item">
+                        <div>
+                            <div style="font-weight:600; font-size:0.9rem;">${p.name}</div>
+                            <div style="font-size:0.75rem; color:var(--text-sub);">${p.brand || 'No Brand'} · ${p.category}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:700; color:var(--accent);">${calcRemainingPct(p.openedAt, p.capacityMl, p.dailyUseMl)}%</div>
+                            <div style="font-size:0.65rem; color:var(--text-sub);">남은 용량</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('user-modal').style.display = 'flex';
+            lucide.createIcons();
+        };
+
+        window.closeModal = () => {
+            document.getElementById('user-modal').style.display = 'none';
+        };
 
         window.delAnnounce = async (id) => {
             if(confirm('이 공지를 삭제할까요?')) {
