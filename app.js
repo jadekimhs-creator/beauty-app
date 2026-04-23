@@ -1,4 +1,4 @@
-import { supabase, getCurrentUser, updateLastLogin, getAllProducts } from './supabaseClient.js';
+import { supabase, getCurrentUser, updateLastLogin } from './supabaseClient.js';
 
 // 전역 인증 체크 (login.html 제외)
 const user = await getCurrentUser();
