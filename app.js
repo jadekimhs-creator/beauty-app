@@ -261,4 +261,4 @@ export async function getAllProducts() {
     return data.map(toCamel);
 }
 
-export { getAllProducts };
+
