@@ -101,4 +101,15 @@ ON CONFLICT (id) DO NOTHING;
 
 -- [방법 4] 특정 유저의 권한을 어드민으로 변경할 때
 -- UPDATE public.profiles SET role = 'admin' WHERE email = '어드민이메일@주소.com';
+-- 7. 공지사항 테이블 추가
+CREATE TABLE announcements (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    content TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
+-- 공지사항 RLS (조회는 모두, 관리는 어드민만)
+ALTER TABLE announcements ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can view active announcements" ON announcements FOR SELECT USING (is_active = TRUE);
+CREATE POLICY "Admins can manage announcements" ON announcements FOR ALL USING (is_admin());

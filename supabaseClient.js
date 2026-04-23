@@ -89,3 +89,24 @@ export async function getAllProducts() {
     }
     return data;
 }
+
+export async function getAnnouncements() {
+    const { data, error } = await supabase
+        .from('announcements')
+        .select('*')
+        .order('created_at', { ascending: false });
+    return data || [];
+}
+
+export async function addAnnouncement(content) {
+    return await supabase
+        .from('announcements')
+        .insert([{ content }]);
+}
+
+export async function deleteAnnouncement(id) {
+    return await supabase
+        .from('announcements')
+        .delete()
+        .eq('id', id);
+}
