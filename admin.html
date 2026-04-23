@@ -295,8 +295,12 @@
 
         // 어드민 권한 체크
         const profile = await getUserProfile();
-        if (!profile || profile.role !== 'admin') {
-            alert('접근 권한이 없습니다. (어드민 전용)');
+        
+        if (!profile) {
+            alert('로그인이 필요하거나 프로필 정보를 불러올 수 없습니다. 로그인 페이지로 이동합니다.');
+            window.location.href = 'login.html';
+        } else if (profile.role !== 'admin') {
+            alert(`접근 권한이 없습니다. (현재 권한: ${profile.role})\n어드민 계정으로 로그인해 주세요.`);
             window.location.href = 'index.html';
         }
 

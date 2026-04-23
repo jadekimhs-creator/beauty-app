@@ -16,10 +16,20 @@ CREATE TABLE profiles (
 -- 프로필 RLS (어드민 또는 본인만)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING ( auth.uid() = id );
+
+-- 어드민 여부 확인용 함수 (무한 루프 방지)
+CREATE OR REPLACE FUNCTION public.is_admin() 
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles 
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- 어드민은 모든 프로필을 볼 수 있음
-CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING ( 
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin') 
-);
+CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING ( is_admin() );
 
 -- 3. 유저 자동 생성 트리거 함수 (회원가입 시 profiles에 자동 삽입)
 CREATE OR REPLACE FUNCTION public.handle_new_user() 
