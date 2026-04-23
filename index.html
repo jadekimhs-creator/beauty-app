@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="다 썼어?">
-    <link rel="stylesheet" href="style.css?v=20260423_08">
+    <link rel="stylesheet" href="style.css?v=20260423_09">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -15,7 +15,7 @@
         
         /* Insight Dashboard */
         .insight-dashboard {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
         }
         .insight-card {
             background: var(--glass); backdrop-filter: blur(20px); padding: 20px; border-radius: 28px;
@@ -32,17 +32,35 @@
             display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.9rem;
         }
 
+        /* Routine Section */
+        .routine-section {
+            background: var(--glass); backdrop-filter: blur(20px); border-radius: 28px;
+            border: 1px solid var(--border); padding: 20px; margin-bottom: 32px;
+        }
+        .routine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .routine-tabs { display: flex; gap: 8px; }
+        .routine-tab {
+            padding: 8px 16px; border-radius: 12px; border: none; background: #f1f5f9;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-muted);
+        }
+        .routine-tab.active { background: var(--primary); color: white; }
+        
+        .routine-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);
+        }
+        .routine-item:last-child { border-bottom: none; }
+        .routine-item input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--purple-accent); }
+        .routine-item label { font-size: 0.9rem; font-weight: 500; cursor: pointer; flex: 1; }
+        .routine-item.done label { text-decoration: line-through; color: var(--text-muted); }
+
         .announcement-banner {
             background: var(--primary); color: white; padding: 10px 20px; border-radius: 12px;
             margin-bottom: 20px; display: none; align-items: center; gap: 10px; font-size: 0.85rem;
-            animation: slideDown 0.5s ease-out;
         }
-        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Announcement Banner -->
         <div class="announcement-banner" id="announcement-banner">
             <i data-lucide="megaphone" style="width:16px;"></i>
             <span id="announcement-content"></span>
@@ -67,16 +85,30 @@
                     <div class="desc" id="score-msg">분석 중...</div>
                 </div>
                 <div class="insight-card">
-                    <div class="label">이달의 소진 예정</div>
+                    <div class="label">소진 예정</div>
                     <div class="value" id="expiring-count">0건</div>
-                    <div class="desc">30일 내 소진될 제품</div>
+                    <div class="desc">30일 내 소진 예상</div>
                 </div>
                 <div class="insight-card full">
                     <div class="label">오늘의 추천 루틴</div>
-                    <div class="value" id="routine-tip" style="font-size:0.95rem;">데이터를 분석 중입니다...</div>
+                    <div class="value" id="routine-tip" style="font-size:0.9rem;">데이터를 분석 중입니다...</div>
                 </div>
             </div>
         </header>
+
+        <!-- Routine Tracker -->
+        <section class="routine-section">
+            <div class="routine-header">
+                <h3 style="font-size: 1rem; font-weight: 700;">Daily Routine</h3>
+                <div class="routine-tabs">
+                    <button class="routine-tab active" data-type="morning">아침</button>
+                    <button class="routine-tab" data-type="night">저녁</button>
+                </div>
+            </div>
+            <div id="routine-list">
+                <!-- Routine items here -->
+            </div>
+        </section>
 
         <div class="search-wrap" style="margin-bottom: 24px;">
             <input type="text" id="search-input" placeholder="제품 또는 브랜드 검색">
@@ -92,60 +124,73 @@
         </div>
 
         <div id="alert-area"></div>
-
-        <div class="product-grid" id="product-list">
-            <!-- Loading state -->
-            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
-                제품 목록을 불러오는 중...
-            </div>
-        </div>
+        <div class="product-grid" id="product-list"></div>
     </div>
 
     <a class="fab" href="add.html"><i data-lucide="plus"></i></a>
 
     <script type="module">
-        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_08';
-        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_08';
+        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_09';
+        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_09';
 
         let currentCat = 'all';
         let allProducts = [];
+        let currentRoutine = 'morning';
 
         async function updateDashboard(products) {
             const expiringCount = products.filter(p => calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) <= 30).length;
             document.getElementById('expiring-count').textContent = expiringCount + '건';
 
+            // Base score from inventory
             const categories = new Set(products.map(p => p.category)).size;
             const totalCount = products.length;
-            let score = Math.min(100, (totalCount * 8) + (categories * 12));
-            if (totalCount === 0) score = 0;
+            let score = Math.min(100, (totalCount * 5) + (categories * 10));
+            
+            // Bonus from routine completion
+            const doneCount = Object.keys(localStorage).filter(k => k.startsWith('routine_') && localStorage.getItem(k) === 'true').length;
+            score = Math.min(100, score + (doneCount * 5));
 
             document.getElementById('beauty-score').textContent = score;
-            
             const gradeEl = document.getElementById('score-grade');
             const msgEl = document.getElementById('score-msg');
             const tipEl = document.getElementById('routine-tip');
 
-            if (score >= 80) { 
-                gradeEl.textContent = 'S'; 
-                gradeEl.style.background = 'var(--purple-accent)';
-                msgEl.textContent = '완벽한 관리 상태입니다!'; 
-                tipEl.textContent = '✨ 루틴이 매우 안정적이에요. 지금처럼만 유지하세요!'; 
-            } else if (score >= 40) { 
-                gradeEl.textContent = 'A'; 
-                gradeEl.style.background = '#3b82f6';
-                msgEl.textContent = '꾸준히 관리 중이시네요.'; 
-                tipEl.textContent = '🧴 카테고리를 더 다양하게 채우면 점수가 올라가요.'; 
-            } else { 
-                gradeEl.textContent = 'B'; 
-                gradeEl.style.background = '#94a3b8';
-                msgEl.textContent = '관리가 더 필요해요.'; 
-                tipEl.textContent = '💡 아직 제품이 부족하네요. 화장대 아이템을 더 등록해보세요.'; 
-            }
+            if (score >= 80) { gradeEl.textContent = 'S'; gradeEl.style.background = '#8b5cf6'; msgEl.textContent = '완벽한 루틴 달성!'; tipEl.textContent = '✨ 피부가 정말 고마워하고 있어요!'; }
+            else if (score >= 50) { gradeEl.textContent = 'A'; gradeEl.style.background = '#3b82f6'; msgEl.textContent = '꾸준함이 생명입니다.'; tipEl.textContent = '🧴 빠진 루틴은 없는지 체크해보세요.'; }
+            else { gradeEl.textContent = 'B'; gradeEl.style.background = '#94a3b8'; msgEl.textContent = '더 분발해볼까요?'; tipEl.textContent = '💡 인벤토리를 채우고 루틴을 시작해보세요.'; }
         }
+
+        function renderRoutine() {
+            const listEl = document.getElementById('routine-list');
+            const routineProducts = allProducts.filter(p => currentRoutine === 'morning' ? p.isMorning : p.isNight);
+            
+            if (routineProducts.length === 0) {
+                listEl.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">등록된 ${currentRoutine === 'morning' ? '아침' : '저녁'} 루틴 제품이 없습니다.</p>`;
+                return;
+            }
+
+            listEl.innerHTML = routineProducts.map(p => {
+                const key = `routine_${p.id}_${new Date().toDateString()}`;
+                const isDone = localStorage.getItem(key) === 'true';
+                return `
+                    <div class="routine-item ${isDone ? 'done' : ''}">
+                        <input type="checkbox" id="check-${p.id}" ${isDone ? 'checked' : ''} onchange="window.toggleRoutine('${p.id}', this.checked)">
+                        <label for="check-${p.id}">${p.name} <span style="font-size:0.7rem; color:var(--text-muted);">(${p.brand || ''})</span></label>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.toggleRoutine = (id, checked) => {
+            const key = `routine_${id}_${new Date().toDateString()}`;
+            localStorage.setItem(key, checked);
+            refresh(); // To update score
+        };
 
         async function refresh() {
             allProducts = await getProducts();
             await updateDashboard(allProducts);
+            renderRoutine();
             renderFiltered();
             document.getElementById('alert-area').innerHTML = renderAlerts(allProducts);
             lucide.createIcons();
@@ -153,19 +198,21 @@
 
         function renderFiltered() {
             const listEl = document.getElementById('product-list');
-            const filtered = currentCat === 'all' 
-                ? allProducts 
-                : allProducts.filter(p => p.category === currentCat);
-            
-            if (filtered.length === 0) {
-                listEl.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted);">제품이 없습니다.</div>';
-            } else {
-                listEl.innerHTML = filtered.map(renderProductCard).join('');
-            }
+            const filtered = currentCat === 'all' ? allProducts : allProducts.filter(p => p.category === currentCat);
+            listEl.innerHTML = filtered.length === 0 ? '<div style="grid-column:1/-1; text-align:center; padding:40px;">No products.</div>' : filtered.map(renderProductCard).join('');
             lucide.createIcons();
         }
 
-        // Filter events
+        // Tab logic
+        document.querySelectorAll('.routine-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.routine-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentRoutine = btn.dataset.type;
+                renderRoutine();
+            });
+        });
+
         document.querySelectorAll('.filter-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -175,51 +222,12 @@
             });
         });
 
-        // Search events
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = allProducts.filter(p => 
-                p.name.toLowerCase().includes(query) || (p.brand && p.brand.toLowerCase().includes(query))
-            );
-            document.getElementById('product-list').innerHTML = filtered.map(renderProductCard).join('');
-            lucide.createIcons();
-        });
-
         document.getElementById('logout-btn').addEventListener('click', async () => {
-            if(confirm('로그아웃 하시겠습니까?')) {
-                await signOut();
-                window.location.href = 'login.html';
-            }
+            if(confirm('로그아웃?')) { await signOut(); window.location.href = 'login.html'; }
         });
-
-        // Init
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-            if (profile?.role === 'admin') document.getElementById('admin-link').style.display = 'block';
-        }
 
         refresh();
-
-        // Announcement Logic
-        const announces = await getAnnouncements();
-        if (announces.length > 0) {
-            const banner = document.getElementById('announcement-banner');
-            const content = document.getElementById('announcement-content');
-            banner.style.display = 'flex';
-            let idx = 0;
-            content.textContent = announces[idx].content;
-            if (announces.length > 1) {
-                setInterval(() => {
-                    idx = (idx + 1) % announces.length;
-                    content.style.opacity = 0;
-                    setTimeout(() => {
-                        content.textContent = announces[idx].content;
-                        content.style.opacity = 1;
-                    }, 500);
-                }, 4000);
-            }
-        }
+        lucide.createIcons();
     </script>
 </body>
 </html>

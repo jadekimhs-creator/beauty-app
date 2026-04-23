@@ -59,6 +59,8 @@ CREATE TABLE products (
     capacity_ml FLOAT8 NOT NULL,
     daily_use_ml FLOAT8 NOT NULL,
     opened_at DATE NOT NULL,
+    is_morning BOOLEAN DEFAULT false,
+    is_night BOOLEAN DEFAULT false,
     coupang_url TEXT
 );
 

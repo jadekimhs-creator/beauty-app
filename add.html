@@ -56,6 +56,20 @@
             <input type="url" id="coupangUrl" placeholder="https://...">
         </div>
 
+        <div class="form-group">
+            <label>Routine Integration (Multi-select)</label>
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <label style="flex: 1; display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 16px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer;">
+                    <input type="checkbox" id="isMorning" style="width: 20px; height: 20px;">
+                    <span style="font-weight: 600; font-size: 0.9rem;">☀️ 아침 루틴</span>
+                </label>
+                <label style="flex: 1; display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 16px; border-radius: 16px; border: 1px solid var(--border); cursor: pointer;">
+                    <input type="checkbox" id="isNight" style="width: 20px; height: 20px;">
+                    <span style="font-weight: 600; font-size: 0.9rem;">🌙 저녁 루틴</span>
+                </label>
+            </div>
+        </div>
+
         <!-- Prediction -->
         <div id="preview-card" style="display:none; margin-bottom: 40px;">
             <div style="background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(236,72,153,0.08)); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px;">
@@ -94,6 +108,8 @@
                     document.getElementById('dailyUse').value = p.dailyUseMl;
                     document.getElementById('openedAt').value = p.openedAt;
                     document.getElementById('coupangUrl').value = p.coupangUrl || '';
+                    document.getElementById('isMorning').checked = p.isMorning;
+                    document.getElementById('isNight').checked = p.isNight;
                     selectedCat = p.category;
                     document.querySelectorAll('.cat-btn').forEach(b => {
                         b.classList.toggle('active', b.dataset.cat === selectedCat);
@@ -166,6 +182,8 @@
                 dailyUseMl: dailyUse,
                 openedAt,
                 coupangUrl: document.getElementById('coupangUrl').value.trim(),
+                isMorning: document.getElementById('isMorning').checked,
+                isNight: document.getElementById('isNight').checked,
             };
 
             if (editId) {

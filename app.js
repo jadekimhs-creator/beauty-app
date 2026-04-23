@@ -24,6 +24,8 @@ function toCamel(p) {
         openedAt: p.opened_at,
         coupangUrl: p.coupang_url,
         userId: p.user_id,
+        isMorning: p.is_morning,
+        isNight: p.is_night,
         createdAt: p.created_at
     };
 }
@@ -36,7 +38,9 @@ function toSnake(p) {
         capacity_ml: p.capacityMl,
         daily_use_ml: p.dailyUseMl,
         opened_at: p.openedAt,
-        coupang_url: p.coupangUrl
+        coupang_url: p.coupangUrl,
+        is_morning: p.isMorning,
+        is_night: p.isNight
     };
 }
 
