@@ -172,7 +172,7 @@
 
     <script type="module">
         import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js';
-        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js';
+        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=2';
 
         const profile = await getUserProfile();
         if (!profile || profile.role !== 'admin') { window.location.href = 'index.html'; }
