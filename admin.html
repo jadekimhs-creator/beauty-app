@@ -181,8 +181,8 @@
     </div>
 
     <script type="module">
-        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=20260423_05';
-        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=20260423_05';
+        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=20260423_06';
+        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=20260423_06';
 
         const profile = await getUserProfile();
         if (!profile || profile.role !== 'admin') { window.location.href = 'index.html'; }
@@ -200,8 +200,10 @@
 
             const userProductCount = {};
             allProducts.forEach(p => {
-                const uid = p.userId || p.user_id; // 2중 체크
-                userProductCount[uid] = (userProductCount[uid] || 0) + 1;
+                const uid = p.userId || p.user_id || p.uid; // 모든 가능성 체크
+                if (uid) {
+                    userProductCount[uid] = (userProductCount[uid] || 0) + 1;
+                }
             });
             
             document.getElementById('user-tbody').innerHTML = allProfiles.map(pr => `
