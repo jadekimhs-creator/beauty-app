@@ -61,3 +61,33 @@ WITH CHECK (auth.uid() = user_id);
 
 -- *참고: 특정 유저에게 어드민 권한을 주려면 앱에서 회원가입 완료 후, Supabase SQL Editor에서 아래 코드를 실행하세요.
 -- UPDATE profiles SET role = 'admin' WHERE email = '당신의이메일@주소.com';
+
+-- ============================================================
+-- 6. profiles 테이블 수동 INSERT 예시
+-- ============================================================
+
+-- [방법 1] 이미 가입된 유저를 profiles에 수동으로 추가할 때
+-- (회원가입 트리거가 실행 안 됐거나, 기존 유저를 마이그레이션할 때 사용)
+INSERT INTO public.profiles (id, email, role)
+SELECT id, email, 'user'
+FROM auth.users
+WHERE email = '유저이메일@주소.com'
+ON CONFLICT (id) DO NOTHING;
+
+-- [방법 2] 어드민 계정을 직접 profiles에 추가할 때
+INSERT INTO public.profiles (id, email, role)
+SELECT id, email, 'admin'
+FROM auth.users
+WHERE email = '어드민이메일@주소.com'
+ON CONFLICT (id) DO UPDATE SET role = 'admin';
+
+-- [방법 3] 모든 기존 auth.users를 profiles에 한꺼번에 동기화할 때
+-- (트리거 추가 전에 이미 가입된 유저들이 있을 경우 사용)
+INSERT INTO public.profiles (id, email, role)
+SELECT id, email, 'user'
+FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+
+-- [방법 4] 특정 유저의 권한을 어드민으로 변경할 때
+-- UPDATE public.profiles SET role = 'admin' WHERE email = '어드민이메일@주소.com';
+
