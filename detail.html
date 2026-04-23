@@ -7,48 +7,31 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .detail-card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin: 0 20px 16px;
-            box-shadow: var(--shadow-card);
-            border: 1.5px solid var(--border);
+        .detail-info {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 20px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-sm);
         }
-        .detail-row {
+        .info-row {
             display: flex; justify-content: space-between;
-            align-items: center; padding: 12px 0;
+            align-items: center; padding: 14px 0;
             border-bottom: 1px solid var(--border);
         }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-key { font-size: 0.85rem; color: var(--text-muted); }
-        .detail-val { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
-        .action-group {
-            display: flex; flex-direction: column; gap: 10px;
-            padding: 0 20px 20px;
+        .info-row:last-child { border-bottom: none; }
+        .info-row .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .info-row .value { font-size: 1rem; font-weight: 600; color: var(--text); }
+        .btn-danger-outline {
+            display: block; width: 100%; padding: 18px;
+            border: 1.5px solid var(--danger); background: none;
+            color: var(--danger); text-align: center; font-weight: 600;
+            font-size: 0.85rem; border-radius: var(--radius-sm); cursor: pointer;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            transition: var(--transition);
         }
-        .btn-full {
-            width: 100%; padding: 14px;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem; font-weight: 700;
-            cursor: pointer; border: none;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            text-decoration: none;
-        }
-        .btn-coupang {
-            background: linear-gradient(135deg, var(--pink-accent), var(--purple-accent));
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(236,72,153,0.3);
-        }
-        .btn-recommend {
-            background: var(--purple-soft);
-            color: var(--purple-accent);
-        }
-        .btn-edit {
-            background: var(--surface2);
-            color: var(--text-sub);
-        }
-        .btn-del { background: #fff5f5; color: var(--red); border: 1.5px solid #fee2e2; }
+        .btn-danger-outline:hover { background: #fff5f5; }
     </style>
 </head>
 <body>
@@ -97,10 +80,10 @@
             </div>
         </div>
 
-        <a id="btn-coupang" href="#" target="_blank" class="btn-primary">Replenish Now</a>
+        <a id="btn-coupang" href="#" target="_blank" class="btn-primary" style="margin-bottom:16px; display:block;">🛒 Replenish Now</a>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-            <a id="btn-edit" href="#" class="btn-secondary-outline" style="text-decoration:none;">Modify</a>
-            <button id="btn-delete" class="btn-secondary-outline" style="color:var(--danger); border-color:var(--danger); background:none; cursor:pointer;">Remove</button>
+            <a id="btn-edit" href="#" class="btn-secondary-outline" style="text-decoration:none; display:block;">✏️ Modify</a>
+            <button id="btn-delete" class="btn-danger-outline">🗑 Remove</button>
         </div>
     </div>
 

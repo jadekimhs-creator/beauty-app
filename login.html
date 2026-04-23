@@ -7,14 +7,15 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
+        .login-page {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            background: linear-gradient(135deg, #f0f4ff, #e8d5f5);
+            padding: 20px;
         }
-        [data-theme="dark"] body {
+        [data-theme="dark"] .login-page {
             background: linear-gradient(135deg, #0f172a, #1e293b);
         }
         .login-card {
@@ -65,6 +66,7 @@
     </style>
 </head>
 <body>
+<div class="login-page">
 
     <div class="login-card">
         <h1 id="form-title">계정 생성하기</h1>
@@ -163,5 +165,6 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
         lucide.createIcons();
     </script>
+</div>
 </body>
 </html>
