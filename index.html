@@ -10,48 +10,47 @@
     <link rel="stylesheet" href="style.css?v=20260423_09">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .logo { font-size: 1.2rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
         
-        /* Insight Dashboard */
+        /* Compact Insight Dashboard */
         .insight-dashboard {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
         }
         .insight-card {
-            background: var(--glass); backdrop-filter: blur(20px); padding: 20px; border-radius: 28px;
+            background: var(--glass); backdrop-filter: blur(20px); padding: 16px; border-radius: 24px;
             border: 1px solid var(--border); box-shadow: var(--shadow-sm);
-            display: flex; flex-direction: column; justify-content: space-between;
         }
         .insight-card.full { grid-column: span 2; }
-        .insight-card .label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
-        .insight-card .value { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
-        .insight-card .desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+        .insight-card .label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
+        .insight-card .value { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .insight-card .desc { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
         
         .score-circle {
-            width: 40px; height: 40px; border-radius: 50%; background: var(--purple-accent);
-            display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.9rem;
+            width: 32px; height: 32px; border-radius: 50%; background: var(--purple-accent);
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.8rem;
         }
 
-        /* Routine Section */
+        /* Compact Routine Section */
         .routine-section {
-            background: var(--glass); backdrop-filter: blur(20px); border-radius: 28px;
-            border: 1px solid var(--border); padding: 20px; margin-bottom: 32px;
+            background: var(--glass); backdrop-filter: blur(20px); border-radius: 24px;
+            border: 1px solid var(--border); padding: 16px; margin-bottom: 24px;
         }
-        .routine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .routine-tabs { display: flex; gap: 8px; }
+        .routine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .routine-tabs { display: flex; gap: 6px; }
         .routine-tab {
-            padding: 8px 16px; border-radius: 12px; border: none; background: #f1f5f9;
-            font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-muted);
+            padding: 6px 12px; border-radius: 10px; border: none; background: #f1f5f9;
+            font-size: 0.75rem; font-weight: 600; cursor: pointer; color: var(--text-muted);
         }
         .routine-tab.active { background: var(--primary); color: white; }
         
         .routine-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border);
         }
         .routine-item:last-child { border-bottom: none; }
-        .routine-item input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: var(--purple-accent); }
-        .routine-item label { font-size: 0.9rem; font-weight: 500; cursor: pointer; flex: 1; }
-        .routine-item.done label { text-decoration: line-through; color: var(--text-muted); }
+        .routine-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--purple-accent); }
+        .routine-item label { font-size: 0.85rem; font-weight: 500; cursor: pointer; flex: 1; }
+        .routine-item.done label { text-decoration: line-through; color: var(--text-muted); opacity: 0.6; }
 
         .announcement-banner {
             background: var(--primary); color: white; padding: 10px 20px; border-radius: 12px;
@@ -60,7 +59,7 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container" style="padding: 16px;">
         <div class="announcement-banner" id="announcement-banner">
             <i data-lucide="megaphone" style="width:16px;"></i>
             <span id="announcement-content"></span>
@@ -130,8 +129,8 @@
     <a class="fab" href="add.html"><i data-lucide="plus"></i></a>
 
     <script type="module">
-        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_09';
-        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_09';
+        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_10';
+        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_10';
 
         let currentCat = 'all';
         let allProducts = [];
