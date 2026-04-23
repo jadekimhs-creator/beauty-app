@@ -13,6 +13,16 @@ export async function signIn(email, password) {
     return await supabase.auth.signInWithPassword({ email, password });
 }
 
+export async function signInWithProvider(provider) {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+            redirectTo: window.location.origin + window.location.pathname.replace('login.html', 'index.html')
+        }
+    });
+    return { data, error };
+}
+
 export async function signOut() {
     return await supabase.auth.signOut();
 }
