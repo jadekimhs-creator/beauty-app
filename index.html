@@ -7,17 +7,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="다 썼어?">
-    <link rel="stylesheet" href="style.css?v=20260423_11">
+    <link rel="stylesheet" href="style.css?v=20260423_12">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
             font-family: 'Outfit', 'Noto Sans KR', sans-serif;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e8d5f5 100%);
+            background: var(--bg-body);
             color: var(--text);
             min-height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
+            transition: background 0.3s ease;
         }
         .app-container {
             width: 100%;
@@ -25,59 +26,84 @@
             min-height: 100vh;
             background: var(--bg);
             padding: 24px 20px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+            box-shadow: 0 0 60px rgba(0,0,0,0.05);
             position: relative;
+            transition: background 0.3s ease;
         }
 
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-size: 1.2rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .logo { font-size: 1.4rem; font-weight: 900; color: var(--primary); letter-spacing: -1.5px; }
         
+        .header-actions { display: flex; gap: 8px; }
+        .action-btn {
+            width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--border);
+            background: var(--glass); color: var(--text); display: flex; align-items: center;
+            justify-content: center; cursor: pointer; transition: all 0.2s ease;
+        }
+        .action-btn:hover { background: var(--border); transform: translateY(-2px); }
+
+        /* Premium Tabs */
+        .filter-tabs {
+            display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; 
+            padding-bottom: 4px; scrollbar-width: none;
+        }
+        .filter-tabs::-webkit-scrollbar { display: none; }
+        .filter-tab {
+            padding: 10px 20px; border-radius: 50px; border: 1px solid var(--border);
+            background: var(--bg-alt); color: var(--text-muted); font-size: 0.8rem;
+            font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.3s ease;
+        }
+        .filter-tab.active {
+            background: var(--primary); color: white; border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
         /* Insight Dashboard Slim */
         .insight-dashboard {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
         }
         .insight-card {
-            background: var(--glass); backdrop-filter: blur(20px); padding: 16px; border-radius: 24px;
+            background: var(--glass); backdrop-filter: blur(20px); padding: 18px; border-radius: 24px;
             border: 1px solid var(--border);
         }
         .insight-card.full { grid-column: span 2; }
-        .insight-card .label { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
-        .insight-card .value { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
-        .insight-card .desc { font-size: 0.6rem; color: var(--text-muted); }
+        .insight-card .label { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .insight-card .value { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+        .insight-card .desc { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
         
         .score-circle {
-            width: 32px; height: 32px; border-radius: 50%; background: var(--purple-accent);
-            display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.75rem;
+            width: 36px; height: 36px; border-radius: 12px; background: var(--primary);
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.9rem;
         }
 
         /* Compact Routine Section */
         .routine-section {
-            background: var(--glass); backdrop-filter: blur(20px); border-radius: 24px;
-            border: 1px solid var(--border); padding: 16px; margin-bottom: 24px;
+            background: var(--bg-alt); border-radius: 24px;
+            border: 1px solid var(--border); padding: 18px; margin-bottom: 24px;
         }
-        .routine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .routine-tabs { display: flex; gap: 6px; }
+        .routine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .routine-tabs { display: flex; background: var(--border); padding: 4px; border-radius: 12px; }
         .routine-tab {
-            padding: 6px 12px; border-radius: 10px; border: none; background: #f1f5f9;
-            font-size: 0.7rem; font-weight: 600; cursor: pointer; color: var(--text-muted);
+            padding: 6px 14px; border-radius: 8px; border: none; background: transparent;
+            font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--text-muted); transition: all 0.2s;
         }
-        .routine-tab.active { background: var(--primary); color: white; }
+        .routine-tab.active { background: var(--bg); color: var(--text); box-shadow: var(--shadow-sm); }
         
         .routine-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);
         }
         .routine-item:last-child { border-bottom: none; }
-        .routine-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--purple-accent); }
-        .routine-item label { font-size: 0.8rem; font-weight: 500; cursor: pointer; flex: 1; }
-        .routine-item.done label { text-decoration: line-through; color: var(--text-muted); opacity: 0.6; }
+        .routine-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
+        .routine-item label { font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; }
+        .routine-item.done label { text-decoration: line-through; color: var(--text-muted); opacity: 0.5; }
 
         .announcement-banner {
-            background: var(--primary); color: white; padding: 10px 20px; border-radius: 12px;
-            margin-bottom: 20px; display: none; align-items: center; gap: 10px; font-size: 0.85rem;
+            background: var(--primary); color: white; padding: 12px 20px; border-radius: 16px;
+            margin-bottom: 20px; display: none; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 600;
         }
     </style>
 </head>
-<body>
+<body data-theme="light">
     <div class="app-container">
         <div class="announcement-banner" id="announcement-banner">
             <i data-lucide="megaphone" style="width:16px;"></i>
@@ -87,9 +113,10 @@
         <header>
             <div class="header-top">
                 <div class="logo">Beauty Shelf</div>
-                <div style="display: flex; gap: 12px;">
-                    <a href="admin.html" id="admin-link" style="display:none; color:var(--text-muted);"><i data-lucide="shield-check"></i></a>
-                    <button class="btn-icon" id="logout-btn"><i data-lucide="log-out"></i></button>
+                <div class="header-actions">
+                    <a href="admin.html" id="admin-link" class="action-btn" style="display:none;" title="Admin"><i data-lucide="shield-check" style="width:18px;"></i></a>
+                    <button class="action-btn" id="theme-toggle" title="Toggle Theme"><i data-lucide="moon" style="width:18px;"></i></button>
+                    <button class="action-btn" id="logout-btn" title="Logout"><i data-lucide="log-out" style="width:18px;"></i></button>
                 </div>
             </div>
             
@@ -109,36 +136,33 @@
                 </div>
                 <div class="insight-card full">
                     <div class="label">오늘의 추천 루틴</div>
-                    <div class="value" id="routine-tip" style="font-size:0.9rem;">데이터를 분석 중입니다...</div>
+                    <div class="value" id="routine-tip" style="font-size:0.95rem; line-height:1.4;">데이터를 분석 중입니다...</div>
                 </div>
             </div>
         </header>
 
-        <!-- Routine Tracker -->
         <section class="routine-section">
             <div class="routine-header">
-                <h3 style="font-size: 1rem; font-weight: 700;">Daily Routine</h3>
+                <h3 style="font-size: 0.95rem; font-weight: 800; margin: 0;">Daily Routine</h3>
                 <div class="routine-tabs">
                     <button class="routine-tab active" data-type="morning">아침</button>
                     <button class="routine-tab" data-type="night">저녁</button>
                 </div>
             </div>
-            <div id="routine-list">
-                <!-- Routine items here -->
-            </div>
+            <div id="routine-list"></div>
         </section>
 
-        <div class="search-wrap" style="margin-bottom: 24px;">
+        <div class="search-wrap" style="margin-bottom: 20px;">
             <input type="text" id="search-input" placeholder="제품 또는 브랜드 검색">
             <i data-lucide="search"></i>
         </div>
 
         <div class="filter-tabs" id="filter-tabs">
-            <button class="filter-tab active" data-cat="all">전체</button>
+            <button class="filter-tab active" data-cat="all">전체보기</button>
             <button class="filter-tab" data-cat="skincare">스킨케어</button>
             <button class="filter-tab" data-cat="makeup">메이크업</button>
-            <button class="filter-tab" data-cat="hair">헤어</button>
-            <button class="filter-tab" data-cat="body">바디</button>
+            <button class="filter-tab" data-cat="hair">헤어케어</button>
+            <button class="filter-tab" data-cat="body">바디케어</button>
         </div>
 
         <div id="alert-area"></div>
@@ -148,23 +172,36 @@
     <a class="fab" href="add.html"><i data-lucide="plus"></i></a>
 
     <script type="module">
-        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_11';
-        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_11';
+        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_12';
+        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_12';
 
         let currentCat = 'all';
         let allProducts = [];
         let currentRoutine = 'morning';
 
+        // Theme Management
+        const themeBtn = document.getElementById('theme-toggle');
+        const applyTheme = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeBtn.innerHTML = theme === 'dark' ? '<i data-lucide="sun" style="width:18px;"></i>' : '<i data-lucide="moon" style="width:18px;"></i>';
+            lucide.createIcons();
+        };
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        themeBtn.addEventListener('click', () => {
+            const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+        });
+
         async function updateDashboard(products) {
             const expiringCount = products.filter(p => calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) <= 30).length;
             document.getElementById('expiring-count').textContent = expiringCount + '건';
 
-            // Base score from inventory
             const categories = new Set(products.map(p => p.category)).size;
             const totalCount = products.length;
             let score = Math.min(100, (totalCount * 5) + (categories * 10));
-            
-            // Bonus from routine completion
             const doneCount = Object.keys(localStorage).filter(k => k.startsWith('routine_') && localStorage.getItem(k) === 'true').length;
             score = Math.min(100, score + (doneCount * 5));
 
@@ -173,27 +210,25 @@
             const msgEl = document.getElementById('score-msg');
             const tipEl = document.getElementById('routine-tip');
 
-            if (score >= 80) { gradeEl.textContent = 'S'; gradeEl.style.background = '#8b5cf6'; msgEl.textContent = '완벽한 루틴 달성!'; tipEl.textContent = '✨ 피부가 정말 고마워하고 있어요!'; }
-            else if (score >= 50) { gradeEl.textContent = 'A'; gradeEl.style.background = '#3b82f6'; msgEl.textContent = '꾸준함이 생명입니다.'; tipEl.textContent = '🧴 빠진 루틴은 없는지 체크해보세요.'; }
-            else { gradeEl.textContent = 'B'; gradeEl.style.background = '#94a3b8'; msgEl.textContent = '더 분발해볼까요?'; tipEl.textContent = '💡 인벤토리를 채우고 루틴을 시작해보세요.'; }
+            if (score >= 80) { gradeEl.textContent = 'S'; gradeEl.style.background = 'var(--primary)'; msgEl.textContent = '완벽한 루틴 달성!'; tipEl.textContent = '✨ 피부가 정말 고마워하고 있어요! 이 루틴을 계속 유지하세요.'; }
+            else if (score >= 50) { gradeEl.textContent = 'A'; gradeEl.style.background = '#3b82f6'; msgEl.textContent = '꾸준함이 생명입니다.'; tipEl.textContent = '🧴 제품군을 조금 더 보강하고 루틴을 성실히 지켜보세요.'; }
+            else { gradeEl.textContent = 'B'; gradeEl.style.background = '#94a3b8'; msgEl.textContent = '더 분발해볼까요?'; tipEl.textContent = '💡 인벤토리를 채우고 루틴 체크를 시작해보세요.'; }
         }
 
         function renderRoutine() {
             const listEl = document.getElementById('routine-list');
             const routineProducts = allProducts.filter(p => currentRoutine === 'morning' ? p.isMorning : p.isNight);
-            
             if (routineProducts.length === 0) {
-                listEl.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.8rem;">등록된 ${currentRoutine === 'morning' ? '아침' : '저녁'} 루틴 제품이 없습니다.</p>`;
+                listEl.innerHTML = `<p style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.75rem;">${currentRoutine === 'morning' ? '아침' : '저녁'} 루틴 제품이 없습니다.</p>`;
                 return;
             }
-
             listEl.innerHTML = routineProducts.map(p => {
                 const key = `routine_${p.id}_${new Date().toDateString()}`;
                 const isDone = localStorage.getItem(key) === 'true';
                 return `
                     <div class="routine-item ${isDone ? 'done' : ''}">
                         <input type="checkbox" id="check-${p.id}" ${isDone ? 'checked' : ''} onchange="window.toggleRoutine('${p.id}', this.checked)">
-                        <label for="check-${p.id}">${p.name} <span style="font-size:0.7rem; color:var(--text-muted);">(${p.brand || ''})</span></label>
+                        <label for="check-${p.id}">${p.name} <span style="font-size:0.7rem; color:var(--text-muted); font-weight:400;">${p.brand || ''}</span></label>
                     </div>
                 `;
             }).join('');
@@ -202,7 +237,7 @@
         window.toggleRoutine = (id, checked) => {
             const key = `routine_${id}_${new Date().toDateString()}`;
             localStorage.setItem(key, checked);
-            refresh(); // To update score
+            refresh();
         };
 
         async function refresh() {
@@ -217,11 +252,10 @@
         function renderFiltered() {
             const listEl = document.getElementById('product-list');
             const filtered = currentCat === 'all' ? allProducts : allProducts.filter(p => p.category === currentCat);
-            listEl.innerHTML = filtered.length === 0 ? '<div style="grid-column:1/-1; text-align:center; padding:40px;">No products.</div>' : filtered.map(renderProductCard).join('');
+            listEl.innerHTML = filtered.length === 0 ? '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted);">제품이 없습니다.</div>' : filtered.map(renderProductCard).join('');
             lucide.createIcons();
         }
 
-        // Tab logic
         document.querySelectorAll('.routine-tab').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.routine-tab').forEach(b => b.classList.remove('active'));
@@ -240,12 +274,39 @@
             });
         });
 
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            if(confirm('로그아웃?')) { await signOut(); window.location.href = 'login.html'; }
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query) || (p.brand && p.brand.toLowerCase().includes(query)));
+            document.getElementById('product-list').innerHTML = filtered.map(renderProductCard).join('');
+            lucide.createIcons();
         });
 
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            if(confirm('로그아웃 하시겠습니까?')) { await signOut(); window.location.href = 'login.html'; }
+        });
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+            if (profile?.role === 'admin') document.getElementById('admin-link').style.display = 'flex';
+        }
+
         refresh();
-        lucide.createIcons();
+        const announces = await getAnnouncements();
+        if (announces.length > 0) {
+            const banner = document.getElementById('announcement-banner');
+            const content = document.getElementById('announcement-content');
+            banner.style.display = 'flex';
+            let idx = 0;
+            content.textContent = announces[idx].content;
+            if (announces.length > 1) {
+                setInterval(() => {
+                    idx = (idx + 1) % announces.length;
+                    content.style.opacity = 0;
+                    setTimeout(() => { content.textContent = announces[idx].content; content.style.opacity = 1; }, 500);
+                }, 4000);
+            }
+        }
     </script>
 </body>
 </html>
