@@ -171,8 +171,8 @@
     </div>
 
     <script type="module">
-        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=2';
-        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=2';
+        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=20260423_02';
+        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=20260423_02';
 
         const profile = await getUserProfile();
         if (!profile || profile.role !== 'admin') { window.location.href = 'index.html'; }
