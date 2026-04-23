@@ -28,7 +28,7 @@
             padding: 20px;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
 
         header {
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
@@ -55,90 +55,74 @@
         .stat-card .label { font-size: 0.85rem; color: var(--text-sub); font-weight: 500; margin-bottom: 8px; }
         .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--primary); }
 
-        /* Main Layout */
-        .admin-grid {
-            display: grid; grid-template-columns: 2fr 1fr; gap: 30px;
+        /* Admin Grid Layout */
+        .admin-layout {
+            display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px;
         }
 
-        @media (max-width: 1000px) {
-            .admin-grid { grid-template-columns: 1fr; }
+        @media (max-width: 1200px) {
+            .admin-layout { grid-template-columns: 1fr; }
         }
 
         .card {
             background: var(--glass); backdrop-filter: blur(20px); border-radius: 24px; border: 1px solid var(--border);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px;
+            display: flex; flex-direction: column;
         }
         .card-header {
-            padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex;
-            justify-content: space-between; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex;
+            justify-content: space-between; align-items: center; background: rgba(255,255,255,0.4);
         }
-        .card-header h2 { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .card-header h2 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
 
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        /* Tables */
+        .table-wrap { overflow-x: auto; flex-grow: 1; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         th { background: rgba(248, 250, 252, 0.5); padding: 12px 16px; text-align: left; color: var(--text-sub); font-weight: 600; }
         td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
         
-        /* Insights */
-        .insight-list { padding: 20px; }
-        .insight-item {
-            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
-            padding: 12px; background: rgba(255,255,255,0.4); border-radius: 12px;
-        }
-        .insight-item .name { font-weight: 600; font-size: 0.9rem; }
-        .insight-item .count { color: var(--accent); font-weight: 700; }
-
-        /* Announcements */
-        .announce-form { padding: 20px; border-bottom: 1px solid var(--border); }
-        .announce-form input {
-            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px;
-        }
-        .btn-action {
-            width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--primary);
-            color: white; font-weight: 600; cursor: pointer;
-        }
-        .announce-list { padding: 10px 20px; }
-        .announce-item {
-            padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;
-        }
-        .announce-item:last-child { border-bottom: none; }
-
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
-        .badge.skincare { background: #fee2e2; color: #ef4444; }
-
-        /* Clickable User Rows */
         #user-tbody tr { cursor: pointer; transition: background 0.2s; }
         #user-tbody tr:hover { background: rgba(236, 72, 153, 0.05); }
+        #user-tbody tr.selected { background: rgba(236, 72, 153, 0.1); border-left: 4px solid var(--accent); }
 
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
+        /* User Detail List */
+        .detail-item {
+            display: flex; justify-content: space-between; padding: 12px 16px;
+            border-bottom: 1px solid var(--border); transition: all 0.2s;
         }
-        .modal-card {
-            background: white; width: 90%; max-width: 600px; border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden;
-            animation: modalScale 0.3s ease-out;
+        .detail-item:last-child { border-bottom: none; }
+        .detail-item .info { display: flex; flex-direction: column; }
+        .detail-item .name { font-weight: 600; color: var(--primary); }
+        .detail-item .meta { font-size: 0.75rem; color: var(--text-sub); }
+        .detail-item .pct { font-weight: 700; color: var(--accent); text-align: right; }
+
+        /* Side Components */
+        .insight-list { padding: 16px; }
+        .insight-item {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+            padding: 10px; background: rgba(255,255,255,0.4); border-radius: 12px;
         }
-        @keyframes modalScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+        .insight-item .name { font-weight: 600; font-size: 0.85rem; }
+        .insight-item .count { color: var(--accent); font-weight: 700; }
+
+        .announce-form { padding: 16px; border-bottom: 1px solid var(--border); }
+        .announce-form input {
+            width: 100%; padding: 10px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 8px; font-size: 0.85rem;
         }
-        .modal-header {
-            padding: 24px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
+        .btn-action {
+            width: 100%; padding: 10px; border-radius: 12px; border: none; background: var(--primary);
+            color: white; font-weight: 600; cursor: pointer; font-size: 0.85rem;
         }
-        .modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
-        .user-product-item {
-            display: flex; justify-content: space-between; padding: 12px;
-            background: #f8fafc; border-radius: 12px; margin-bottom: 8px;
+        .announce-list { padding: 10px 16px; }
+        .announce-item {
+            padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
         }
+
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; background: #fee2e2; color: #ef4444; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 기존 내용 ... -->
         <header>
             <a href="index.html" class="btn-back"><i data-lucide="chevron-left"></i> 돌아가기</a>
             <div class="title-group">
@@ -153,63 +137,45 @@
             <div class="stat-card"><div class="label">소진 임박</div><div class="value" id="stat-danger" style="color:#ef4444;">0</div></div>
         </div>
 
-        <div class="admin-grid">
-            <div class="main-content">
-                <div class="card">
-                    <div class="card-header"><h2><i data-lucide="users"></i> 사용자 계정 및 활동 (클릭하여 상세 조회)</h2></div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr><th>이메일</th><th>제품 수</th><th>마지막 접속</th></tr>
-                            </thead>
-                            <tbody id="user-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header"><h2><i data-lucide="package"></i> 전체 제품 모니터링</h2></div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr><th>제품명</th><th>소유자</th><th>카테고리</th><th>남은양</th></tr>
-                            </thead>
-                            <tbody id="product-tbody"></tbody>
-                        </table>
-                    </div>
+        <div class="admin-layout">
+            <!-- Left: User Accounts -->
+            <div class="card" style="height: fit-content;">
+                <div class="card-header"><h2><i data-lucide="users"></i> 사용자 (클릭 시 상세)</h2></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>이메일</th><th>제품</th></tr>
+                        </thead>
+                        <tbody id="user-tbody"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="side-content">
+            <!-- Middle: User Specific Inventory -->
+            <div class="card" id="user-detail-card">
+                <div class="card-header">
+                    <h2><i data-lucide="search"></i> <span id="detail-user-name">사용자를 선택하세요</span></h2>
+                </div>
+                <div id="user-inventory-list" style="flex-grow:1; min-height: 200px;">
+                    <p style="padding:40px; text-align:center; color:var(--text-sub);">사용자 계정을 클릭하면 등록한 제품들이 여기에 표시됩니다.</p>
+                </div>
+            </div>
+
+            <!-- Right: Insights & Announcements -->
+            <div class="side-panel">
                 <div class="card">
-                    <div class="card-header"><h2><i data-lucide="bar-chart-3"></i> 인기 브랜드 TOP 5</h2></div>
+                    <div class="card-header"><h2><i data-lucide="bar-chart-3"></i> 인기 브랜드</h2></div>
                     <div class="insight-list" id="brand-insight"></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><h2><i data-lucide="bell"></i> 공지사항 관리</h2></div>
+                    <div class="card-header"><h2><i data-lucide="bell"></i> 공지 관리</h2></div>
                     <div class="announce-form">
-                        <input type="text" id="new-announce" placeholder="공지 내용을 입력하세요...">
+                        <input type="text" id="new-announce" placeholder="공지 내용 입력...">
                         <button class="btn-action" id="btn-add-announce">공지 게시</button>
                     </div>
                     <div class="announce-list" id="announce-list"></div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Details Modal -->
-    <div id="user-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div>
-                    <h3 id="modal-user-email" style="font-size: 1.2rem; color: var(--primary);">User Inventory</h3>
-                    <p style="font-size: 0.8rem; color: var(--text-sub);">사용자가 등록한 제품 리스트입니다.</p>
-                </div>
-                <button onclick="window.closeModal()" style="background:none; border:none; cursor:pointer;"><i data-lucide="x"></i></button>
-            </div>
-            <div class="modal-body" id="modal-product-list">
-                <!-- Products will be injected here -->
             </div>
         </div>
     </div>
@@ -222,33 +188,23 @@
         if (!profile || profile.role !== 'admin') { window.location.href = 'index.html'; }
 
         let allProducts = [];
+        let allProfiles = [];
 
         async function refresh() {
             allProducts = await getAllProducts();
-            const profiles = await getProfiles();
+            allProfiles = await getProfiles();
             const announces = await getAnnouncements();
 
-            document.getElementById('stat-users').textContent = profiles.length;
+            document.getElementById('stat-users').textContent = allProfiles.length;
             document.getElementById('stat-total').textContent = allProducts.length;
 
             const userProductCount = {};
             allProducts.forEach(p => userProductCount[p.userId] = (userProductCount[p.userId] || 0) + 1);
             
-            document.getElementById('user-tbody').innerHTML = profiles.map(pr => `
-                <tr onclick="window.showUserDetails('${pr.id}', '${pr.email}')">
+            document.getElementById('user-tbody').innerHTML = allProfiles.map(pr => `
+                <tr id="user-row-${pr.id}" onclick="window.selectUser('${pr.id}', '${pr.email}')">
                     <td><b>${pr.email}</b></td>
                     <td>${userProductCount[pr.id] || 0}개</td>
-                    <td style="color:var(--text-sub); font-size:0.75rem;">${pr.last_login_at ? new Date(pr.last_login_at).toLocaleString() : '-'}</td>
-                </tr>
-            `).join('');
-
-            const userMap = {}; profiles.forEach(pr => userMap[pr.id] = pr.email);
-            document.getElementById('product-tbody').innerHTML = allProducts.map(p => `
-                <tr>
-                    <td>${p.name}</td>
-                    <td style="font-size:0.75rem;">${userMap[p.userId] || '-'}</td>
-                    <td><span class="badge skincare">${p.category}</span></td>
-                    <td>${calcRemainingPct(p.openedAt, p.capacityMl, p.dailyUseMl)}%</td>
                 </tr>
             `).join('');
 
@@ -265,41 +221,39 @@
             document.getElementById('announce-list').innerHTML = announces.map(a => `
                 <div class="announce-item">
                     <span style="font-size:0.85rem;">${a.content}</span>
-                    <button onclick="window.delAnnounce('${a.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer;">삭제</button>
+                    <button onclick="window.delAnnounce('${a.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
                 </div>
             `).join('');
 
             lucide.createIcons();
         }
 
-        window.showUserDetails = (userId, email) => {
+        window.selectUser = (userId, email) => {
+            // Select row UI
+            document.querySelectorAll('#user-tbody tr').forEach(r => r.classList.remove('selected'));
+            document.getElementById(`user-row-${userId}`).classList.add('selected');
+
             const userProducts = allProducts.filter(p => p.userId === userId);
-            document.getElementById('modal-user-email').textContent = email;
-            const listEl = document.getElementById('modal-product-list');
+            document.getElementById('detail-user-name').textContent = email;
+            const listEl = document.getElementById('user-inventory-list');
             
             if (userProducts.length === 0) {
-                listEl.innerHTML = '<p style="text-align:center; color:var(--text-sub); padding: 40px;">등록된 제품이 없습니다.</p>';
+                listEl.innerHTML = '<p style="padding:40px; text-align:center; color:var(--text-sub);">등록된 제품이 없습니다.</p>';
             } else {
                 listEl.innerHTML = userProducts.map(p => `
-                    <div class="user-product-item">
-                        <div>
-                            <div style="font-weight:600; font-size:0.9rem;">${p.name}</div>
-                            <div style="font-size:0.75rem; color:var(--text-sub);">${p.brand || 'No Brand'} · ${p.category}</div>
+                    <div class="detail-item">
+                        <div class="info">
+                            <span class="name">${p.name}</span>
+                            <span class="meta">${p.brand || 'No Brand'} · ${p.category}</span>
                         </div>
-                        <div style="text-align:right;">
-                            <div style="font-weight:700; color:var(--accent);">${calcRemainingPct(p.openedAt, p.capacityMl, p.dailyUseMl)}%</div>
-                            <div style="font-size:0.65rem; color:var(--text-sub);">남은 용량</div>
+                        <div class="pct">
+                            <div>${calcRemainingPct(p.openedAt, p.capacityMl, p.dailyUseMl)}%</div>
+                            <div style="font-size:0.65rem; color:var(--text-sub); font-weight:400;">REMAINING</div>
                         </div>
                     </div>
                 `).join('');
             }
-            
-            document.getElementById('user-modal').style.display = 'flex';
             lucide.createIcons();
-        };
-
-        window.closeModal = () => {
-            document.getElementById('user-modal').style.display = 'none';
         };
 
         window.delAnnounce = async (id) => {

@@ -23,6 +23,7 @@ function toCamel(p) {
         dailyUseMl: p.daily_use_ml,
         openedAt: p.opened_at,
         coupangUrl: p.coupang_url,
+        userId: p.user_id,
         createdAt: p.created_at
     };
 }
