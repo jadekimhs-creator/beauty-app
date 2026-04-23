@@ -136,16 +136,11 @@
             else if (status === 'warn') donutFill.style.stroke = '#F59E0B';
 
             document.getElementById('donut-pct').textContent = `${pct}%`;
-            document.getElementById('donut-sub').textContent =
-                daysLeft <= 0 ? '소진됨' :
-                status === 'danger' ? '🚨 위험!' :
-                status === 'warn' ? '⚡ 주의' : '✅ 여유 있음';
 
             // 상세 정보
             document.getElementById('d-brand').textContent = p.brand || '-';
             document.getElementById('d-cat').textContent = `${cat.emoji} ${cat.label}`;
             document.getElementById('d-cap').textContent = `${p.capacityMl}ml`;
-            document.getElementById('d-daily').textContent = `${p.dailyUseMl}ml/일`;
             document.getElementById('d-opened').textContent = formatDate(p.openedAt);
             document.getElementById('d-runout').textContent = formatDate(runout);
             document.getElementById('d-days').textContent =
