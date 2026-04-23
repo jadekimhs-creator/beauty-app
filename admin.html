@@ -181,8 +181,8 @@
     </div>
 
     <script type="module">
-        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=20260423_03';
-        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=20260423_03';
+        import { getAllProducts, deleteProduct, calcRemainingPct } from './app.js?v=20260423_05';
+        import { getUserProfile, getProfiles, getAnnouncements, addAnnouncement, deleteAnnouncement } from './supabaseClient.js?v=20260423_05';
 
         const profile = await getUserProfile();
         if (!profile || profile.role !== 'admin') { window.location.href = 'index.html'; }
@@ -199,7 +199,10 @@
             document.getElementById('stat-total').textContent = allProducts.length;
 
             const userProductCount = {};
-            allProducts.forEach(p => userProductCount[p.userId] = (userProductCount[p.userId] || 0) + 1);
+            allProducts.forEach(p => {
+                const uid = p.userId || p.user_id; // 2중 체크
+                userProductCount[uid] = (userProductCount[uid] || 0) + 1;
+            });
             
             document.getElementById('user-tbody').innerHTML = allProfiles.map(pr => `
                 <tr id="user-row-${pr.id}" onclick="window.selectUser('${pr.id}', '${pr.email}')">
@@ -231,9 +234,10 @@
         window.selectUser = (userId, email) => {
             // Select row UI
             document.querySelectorAll('#user-tbody tr').forEach(r => r.classList.remove('selected'));
-            document.getElementById(`user-row-${userId}`).classList.add('selected');
+            const row = document.getElementById(`user-row-${userId}`);
+            if(row) row.classList.add('selected');
 
-            const userProducts = allProducts.filter(p => p.userId === userId);
+            const userProducts = allProducts.filter(p => (p.userId === userId || p.user_id === userId));
             document.getElementById('detail-user-name').textContent = email;
             const listEl = document.getElementById('user-inventory-list');
             
