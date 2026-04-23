@@ -1,10 +1,14 @@
-import { supabase, getCurrentUser } from './supabaseClient.js';
+import { supabase, getCurrentUser, updateLastLogin, getAllProducts } from './supabaseClient.js';
 
 // 전역 인증 체크 (login.html 제외)
 const user = await getCurrentUser();
 const currentPath = window.location.pathname;
 if (!user && !currentPath.includes('login.html') && !currentPath.includes('admin.html')) {
     window.location.href = 'login.html';
+}
+
+if (user) {
+    updateLastLogin();
 }
 
 // ── 데이터 변환 헬퍼 (snake_case <-> camelCase) ───────────────────────────
@@ -250,3 +254,4 @@ export function renderAlerts(products) {
     return html;
 }
 window.renderAlerts = renderAlerts;
+export { getAllProducts };

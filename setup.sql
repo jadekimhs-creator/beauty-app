@@ -10,6 +10,7 @@ CREATE TABLE profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email TEXT,
     role TEXT DEFAULT 'user',
+    last_login_at TIMESTAMPTZ DEFAULT NOW(),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -66,8 +67,8 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage own products" 
 ON products FOR ALL 
-USING (auth.uid() = user_id) 
-WITH CHECK (auth.uid() = user_id);
+USING (auth.uid() = user_id OR is_admin()) 
+WITH CHECK (auth.uid() = user_id OR is_admin());
 
 -- *참고: 특정 유저에게 어드민 권한을 주려면 앱에서 회원가입 완료 후, Supabase SQL Editor에서 아래 코드를 실행하세요.
 -- UPDATE profiles SET role = 'admin' WHERE email = '당신의이메일@주소.com';

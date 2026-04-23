@@ -66,3 +66,26 @@ export async function getProfiles() {
     }
     return data;
 }
+
+export async function updateLastLogin() {
+    const user = await getCurrentUser();
+    if (!user) return;
+
+    await supabase
+        .from('profiles')
+        .update({ last_login_at: new Date().toISOString() })
+        .eq('id', user.id);
+}
+
+export async function getAllProducts() {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
+    if (error) {
+        console.error('Error fetching all products:', error);
+        return [];
+    }
+    return data;
+}
