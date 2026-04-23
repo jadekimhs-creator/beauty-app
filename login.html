@@ -91,7 +91,7 @@
         <button class="btn-social" data-provider="google">
             <i data-lucide="chrome"></i> Google 계정으로 계속
         </button>
-        <button class="btn-social" onclick="alert('네이버 로그인은 서비스 준비 중입니다.')">
+        <button class="btn-social" id="btn-naver">
             <span style="font-weight: 900; color: #03C75A; margin-right: 8px;">N</span> Naver 계정으로 계속
         </button>
 
@@ -115,6 +115,11 @@
         const toggleText = document.getElementById('toggle-text');
         const toggleBtn = document.getElementById('toggle-btn');
         const form = document.getElementById('auth-form');
+
+        document.getElementById('btn-naver').addEventListener('click', async () => {
+            const { error } = await signInWithProvider('naver');
+            if (error) alert('네이버 로그인 실패: ' + error.message);
+        });
 
         toggleBtn.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
