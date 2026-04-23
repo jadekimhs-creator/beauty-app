@@ -91,14 +91,8 @@
         <button class="btn-social" data-provider="google">
             <i data-lucide="chrome"></i> Google 계정으로 계속
         </button>
-        <button class="btn-social" data-provider="facebook">
-            <i data-lucide="facebook"></i> Facebook 계정으로 계속
-        </button>
-        <button class="btn-social" data-provider="naver">
+        <button class="btn-social" onclick="alert('네이버 로그인은 서비스 준비 중입니다.')">
             <span style="font-weight: 900; color: #03C75A; margin-right: 8px;">N</span> Naver 계정으로 계속
-        </button>
-        <button class="btn-social" data-provider="kakao">
-            <span style="font-weight: 900; color: #FEE500; text-shadow: 0 0 1px #000; margin-right: 8px;">K</span> Kakao/Daum 계정으로 계속
         </button>
 
         <div class="footer-terms">
@@ -166,8 +160,8 @@
             submitBtn.textContent = isLoginMode ? '로그인' : '계정 생성';
         });
 
-        // 소셜 로그인 버튼 핸들러
-        document.querySelectorAll('.btn-social').forEach(btn => {
+        // 소셜 로그인 버튼 핸들러 (구글 전용)
+        document.querySelectorAll('.btn-social[data-provider]').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const provider = btn.dataset.provider;
                 const { error } = await signInWithProvider(provider);
