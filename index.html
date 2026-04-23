@@ -2,275 +2,224 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>화장품 다 썼어 💄</title>
-    <meta name="description" content="스킨케어/헤어 제품 소모품 재구매 타이밍 앱. 다 떨어질 날짜를 자동 예측해 드려요!">
-    <meta name="theme-color" content="#EC4899">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>다 썼어? | 스마트 뷰티 인벤토리</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="다 썼어?">
-    <link rel="stylesheet" href="style.css?v=20260423_02">
+    <link rel="stylesheet" href="style.css?v=20260423_08">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+        
+        /* Insight Dashboard */
+        .insight-dashboard {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px;
+        }
+        .insight-card {
+            background: var(--glass); backdrop-filter: blur(20px); padding: 20px; border-radius: 28px;
+            border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .insight-card.full { grid-column: span 2; }
+        .insight-card .label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+        .insight-card .value { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+        .insight-card .desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+        
+        .score-circle {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--purple-accent);
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.9rem;
+        }
+
+        .announcement-banner {
+            background: var(--primary); color: white; padding: 10px 20px; border-radius: 12px;
+            margin-bottom: 20px; display: none; align-items: center; gap: 10px; font-size: 0.85rem;
+            animation: slideDown 0.5s ease-out;
+        }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
 </head>
 <body>
-
-    <div class="container">
-        <div id="announcement-bar" style="display:none; background: var(--purple-soft); color: var(--purple-accent); padding: 12px 20px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;">
+    <div class="app-container">
+        <!-- Announcement Banner -->
+        <div class="announcement-banner" id="announcement-banner">
             <i data-lucide="megaphone" style="width:16px;"></i>
             <span id="announcement-content"></span>
         </div>
 
-        <header class="header">
-            <div class="app-logo">Arch Beauty</div>
-            <div style="display:flex; gap:12px;">
-                <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
-                    <i data-lucide="moon"></i>
-                </button>
-                <button class="btn-filter" id="btn-logout" title="Logout"><i data-lucide="log-out"></i></button>
-                <button class="btn-filter"><i data-lucide="align-right"></i></button>
+        <header>
+            <div class="header-top">
+                <div class="logo">Beauty Shelf</div>
+                <div style="display: flex; gap: 12px;">
+                    <a href="admin.html" id="admin-link" style="display:none; color:var(--text-muted);"><i data-lucide="shield-check"></i></a>
+                    <button class="btn-icon" id="logout-btn"><i data-lucide="log-out"></i></button>
+                </div>
+            </div>
+            
+            <div class="insight-dashboard" id="insight-dashboard">
+                <div class="insight-card">
+                    <div class="label">뷰티 스코어</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="value" id="beauty-score">0</div>
+                        <div class="score-circle" id="score-grade">A</div>
+                    </div>
+                    <div class="desc" id="score-msg">분석 중...</div>
+                </div>
+                <div class="insight-card">
+                    <div class="label">이달의 소진 예정</div>
+                    <div class="value" id="expiring-count">0건</div>
+                    <div class="desc">30일 내 소진될 제품</div>
+                </div>
+                <div class="insight-card full">
+                    <div class="label">오늘의 추천 루틴</div>
+                    <div class="value" id="routine-tip" style="font-size:0.95rem;">데이터를 분석 중입니다...</div>
+                </div>
             </div>
         </header>
 
-        <div id="insight-area"></div>
-
-        <div class="search-wrap">
-            <input type="text" id="search-input" placeholder="Search by name or brand...">
+        <div class="search-wrap" style="margin-bottom: 24px;">
+            <input type="text" id="search-input" placeholder="제품 또는 브랜드 검색">
             <i data-lucide="search"></i>
         </div>
 
-        <div class="forecast-section">
-            <h3>Next 30 Days Forecast</h3>
-            <div class="timeline-scroll" id="timeline-scroll">
-                <!-- Timeline items will be injected here -->
-            </div>
-        </div>
-
-        <div class="greeting">
-            <h2 id="greeting-text">Collection</h2>
-            <p id="greeting-sub">Your beauty inventory overview.</p>
-        </div>
-
-        <div class="summary-cards">
-            <div class="sum-card">
-                <span class="label">Items</span>
-                <div class="value" id="total-count">0</div>
-            </div>
-            <div class="sum-card">
-                <span class="label">Depleting</span>
-                <div class="value" id="danger-count">0</div>
-            </div>
-            <div class="sum-card">
-                <span class="label">Warning</span>
-                <div class="value" id="warn-count">0</div>
-            </div>
-        </div>
-
-        <div class="tabs">
-            <div class="tab-chip active" data-cat="all">All</div>
-            <div class="tab-chip" data-cat="skincare">Skincare</div>
-            <div class="tab-chip" data-cat="hair">Hair</div>
-            <div class="tab-chip" data-cat="body">Body</div>
-            <div class="tab-chip" data-cat="makeup">Makeup</div>
+        <div class="filter-tabs" id="filter-tabs">
+            <button class="filter-tab active" data-cat="all">전체</button>
+            <button class="filter-tab" data-cat="skincare">스킨케어</button>
+            <button class="filter-tab" data-cat="makeup">메이크업</button>
+            <button class="filter-tab" data-cat="hair">헤어</button>
+            <button class="filter-tab" data-cat="body">바디</button>
         </div>
 
         <div id="alert-area"></div>
 
-        <div class="product-list" id="product-list">
-            <p style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">Initializing gallery...</p>
+        <div class="product-grid" id="product-list">
+            <!-- Loading state -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+                제품 목록을 불러오는 중...
+            </div>
         </div>
     </div>
 
     <a class="fab" href="add.html"><i data-lucide="plus"></i></a>
 
     <script type="module">
-        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_07';
-        import { signOut, getAnnouncements } from './supabaseClient.js?v=20260423_07';
+        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_08';
+        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_08';
 
         let currentCat = 'all';
-        let sortAsc = true;
-        let searchQuery = '';
+        let allProducts = [];
 
-        async function render() {
-            // 공지사항 로드
-            const announces = await getAnnouncements();
-            const bar = document.getElementById('announcement-bar');
-            if (announces && announces.length > 0) {
-                bar.style.display = 'flex';
-                document.getElementById('announcement-content').textContent = announces[0].content;
-            } else {
-                bar.style.display = 'none';
-            }
+        async function updateDashboard(products) {
+            const expiringCount = products.filter(p => calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) <= 30).length;
+            document.getElementById('expiring-count').textContent = expiringCount + '건';
 
-            const listEl = document.getElementById('product-list');
-            const timelineEl = document.getElementById('timeline-scroll');
-            const all = await getProducts();
+            const categories = new Set(products.map(p => p.category)).size;
+            const totalCount = products.length;
+            let score = Math.min(100, (totalCount * 8) + (categories * 12));
+            if (totalCount === 0) score = 0;
+
+            document.getElementById('beauty-score').textContent = score;
             
-            // 검색 필터링
-            const searched = all.filter(p => 
-                p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()))
-            );
+            const gradeEl = document.getElementById('score-grade');
+            const msgEl = document.getElementById('score-msg');
+            const tipEl = document.getElementById('routine-tip');
 
-            const filtered = currentCat === 'all' ? searched : searched.filter(p => p.category === currentCat);
-
-            // 통계 업데이트
-            const danger = all.filter(p => calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) <= 7).length;
-            const warn = all.filter(p => {
-                const d = calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl);
-                return d > 7 && d <= 30;
-            }).length;
-
-            document.getElementById('total-count').textContent = all.length;
-            document.getElementById('danger-count').textContent = danger;
-            document.getElementById('warn-count').textContent = warn;
-
-            // 타임라인 생성 (다음 30일 이내 소진되는 제품들)
-            const timelineItems = all
-                .map(p => ({ ...p, daysLeft: calcDaysLeft(p.openedAt, p.capacityMl, p.dailyUseMl) }))
-                .filter(p => p.daysLeft >= 0 && p.daysLeft <= 30)
-                .sort((a, b) => a.daysLeft - b.daysLeft);
-
-            if (timelineItems.length === 0) {
-                timelineEl.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); padding: 1rem;">No items depleting soon.</p>';
-            } else {
-                timelineEl.innerHTML = timelineItems.map(p => `
-                    <a href="detail.html?id=${p.id}" class="timeline-tile ${p.daysLeft <= 7 ? 'danger' : ''}">
-                        <span class="date">${p.daysLeft === 0 ? 'Today' : `In ${p.daysLeft} days`}</span>
-                        <div class="p-name">${p.name}</div>
-                    </a>
-                `).join('');
+            if (score >= 80) { 
+                gradeEl.textContent = 'S'; 
+                gradeEl.style.background = 'var(--purple-accent)';
+                msgEl.textContent = '완벽한 관리 상태입니다!'; 
+                tipEl.textContent = '✨ 루틴이 매우 안정적이에요. 지금처럼만 유지하세요!'; 
+            } else if (score >= 40) { 
+                gradeEl.textContent = 'A'; 
+                gradeEl.style.background = '#3b82f6';
+                msgEl.textContent = '꾸준히 관리 중이시네요.'; 
+                tipEl.textContent = '🧴 카테고리를 더 다양하게 채우면 점수가 올라가요.'; 
+            } else { 
+                gradeEl.textContent = 'B'; 
+                gradeEl.style.background = '#94a3b8';
+                msgEl.textContent = '관리가 더 필요해요.'; 
+                tipEl.textContent = '💡 아직 제품이 부족하네요. 화장대 아이템을 더 등록해보세요.'; 
             }
+        }
 
-            // 인사말 업데이트
-            if (danger > 0) {
-                document.getElementById('greeting-text').textContent = `Action Required`;
-                document.getElementById('greeting-sub').textContent = `${danger} items are nearly empty.`;
-            } else {
-                document.getElementById('greeting-text').textContent = 'Collection';
-                document.getElementById('greeting-sub').textContent = 'Your beauty inventory overview.';
-            }
-
-            // 알림 배너
-            document.getElementById('alert-area').innerHTML = renderAlerts(all);
-
-            // 정렬 적용
-            const sorted = [...filtered].sort((a, b) => {
-                const diffA = calcDaysLeft(a.openedAt, a.capacityMl, a.dailyUseMl);
-                const diffB = calcDaysLeft(b.openedAt, b.capacityMl, b.dailyUseMl);
-                return sortAsc ? diffA - diffB : diffB - diffA;
-            });
-
-            if (sorted.length === 0) {
-                listEl.innerHTML = `
-                <div class="empty-state">
-                    <p style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">No results found</p>
-                </div>`;
-            } else {
-                listEl.innerHTML = sorted.map(renderProductCard).join('');
-            }
-
+        async function refresh() {
+            allProducts = await getProducts();
+            await updateDashboard(allProducts);
+            renderFiltered();
+            document.getElementById('alert-area').innerHTML = renderAlerts(allProducts);
             lucide.createIcons();
         }
 
-        // 검색 이벤트
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            searchQuery = e.target.value;
-            render();
-        });
+        function renderFiltered() {
+            const listEl = document.getElementById('product-list');
+            const filtered = currentCat === 'all' 
+                ? allProducts 
+                : allProducts.filter(p => p.category === currentCat);
+            
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted);">제품이 없습니다.</div>';
+            } else {
+                listEl.innerHTML = filtered.map(renderProductCard).join('');
+            }
+            lucide.createIcons();
+        }
 
-        // 탭 클릭
-        document.querySelectorAll('.tab-chip').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-chip').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentCat = btn.dataset.cat;
-                render();
+        // Filter events
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentCat = tab.dataset.cat;
+                renderFiltered();
             });
         });
 
-        // 초기 렌더링
-        render();
-
-        // 필터 버튼 (정렬 전환)
-        document.querySelector('.btn-filter').addEventListener('click', () => {
-            sortAsc = !sortAsc;
-            const icon = document.querySelector('.btn-filter i, .btn-filter svg');
-            if (icon) icon.style.transform = sortAsc ? 'rotate(0deg)' : 'rotate(180deg)';
-            render();
+        // Search events
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allProducts.filter(p => 
+                p.name.toLowerCase().includes(query) || (p.brand && p.brand.toLowerCase().includes(query))
+            );
+            document.getElementById('product-list').innerHTML = filtered.map(renderProductCard).join('');
+            lucide.createIcons();
         });
 
-        // 로그아웃
-        document.getElementById('btn-logout').addEventListener('click', async () => {
-            if (confirm('로그아웃 하시겠습니까?')) {
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            if(confirm('로그아웃 하시겠습니까?')) {
                 await signOut();
-                location.href = 'login.html';
+                window.location.href = 'login.html';
             }
         });
 
-        // ── 관리자 모드 트리거 (로고 5번 클릭) ─────────────────────────────
-        let logoClicks = 0;
-        document.querySelector('.app-logo').addEventListener('click', () => {
-            logoClicks++;
-            if (logoClicks >= 5) {
-                location.href = 'admin.html';
+        // Init
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+            if (profile?.role === 'admin') document.getElementById('admin-link').style.display = 'block';
+        }
+
+        refresh();
+
+        // Announcement Logic
+        const announces = await getAnnouncements();
+        if (announces.length > 0) {
+            const banner = document.getElementById('announcement-banner');
+            const content = document.getElementById('announcement-content');
+            banner.style.display = 'flex';
+            let idx = 0;
+            content.textContent = announces[idx].content;
+            if (announces.length > 1) {
+                setInterval(() => {
+                    idx = (idx + 1) % announces.length;
+                    content.style.opacity = 0;
+                    setTimeout(() => {
+                        content.textContent = announces[idx].content;
+                        content.style.opacity = 1;
+                    }, 500);
+                }, 4000);
             }
-            setTimeout(() => { logoClicks = 0; }, 2000);
-        });
-
-        // ── Theme Management ────────────────────────────────────────────────
-        const toggleTheme = () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            const target = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', target);
-            localStorage.setItem('theme', target);
-            updateThemeIcon();
-        };
-
-        const updateThemeIcon = () => {
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            const icon = document.querySelector('#theme-toggle i');
-            if (icon) {
-                icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-                lucide.createIcons();
-            }
-        };
-
-        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-
-        // Set initial theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        updateThemeIcon();
-
-        // ── Insights ────────────────────────────────────────────────────────
-        const insights = [
-            { q: "Beauty is about being comfortable in your own skin.", a: "Anonymous" },
-            { q: "Drink water, stay hydrated. Your skin will thank you.", a: "Skincare Tip" },
-            { q: "Less is more. A simple routine is often the most effective.", a: "Minimalist Beauty" },
-            { q: "SPF is your best friend. Every single day.", a: "Essential Tip" },
-            { q: "Confidence is the best makeup any woman can wear.", a: "E. Lauder" }
-        ];
-
-        const renderInsight = () => {
-            const random = insights[Math.floor(Math.random() * insights.length)];
-            document.getElementById('insight-area').innerHTML = `
-                <div class="insight-card">
-                    <div class="quote">${random.q}</div>
-                    <div class="author">— ${random.a}</div>
-                </div>
-            `;
-        };
-        renderInsight();
-
-        // ── PWA Service Worker + 알림 초기화 ─────────────────────────────
-        (async () => {
-            if ('serviceWorker' in navigator) {
-                try { await navigator.serviceWorker.register('sw.js'); } catch(e) {}
-            }
-        })();
+        }
     </script>
 </body>
 </html>
