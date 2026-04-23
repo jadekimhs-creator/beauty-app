@@ -7,28 +7,47 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="다 썼어?">
-    <link rel="stylesheet" href="style.css?v=20260423_09">
+    <link rel="stylesheet" href="style.css?v=20260423_11">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8d5f5 100%);
+            color: var(--text);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background: var(--bg);
+            padding: 24px 20px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-size: 1.2rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
         
-        /* Compact Insight Dashboard */
+        /* Insight Dashboard Slim */
         .insight-dashboard {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;
         }
         .insight-card {
             background: var(--glass); backdrop-filter: blur(20px); padding: 16px; border-radius: 24px;
-            border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
         }
         .insight-card.full { grid-column: span 2; }
-        .insight-card .label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
-        .insight-card .value { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-        .insight-card .desc { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+        .insight-card .label { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
+        .insight-card .value { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+        .insight-card .desc { font-size: 0.6rem; color: var(--text-muted); }
         
         .score-circle {
             width: 32px; height: 32px; border-radius: 50%; background: var(--purple-accent);
-            display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.8rem;
+            display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.75rem;
         }
 
         /* Compact Routine Section */
@@ -40,7 +59,7 @@
         .routine-tabs { display: flex; gap: 6px; }
         .routine-tab {
             padding: 6px 12px; border-radius: 10px; border: none; background: #f1f5f9;
-            font-size: 0.75rem; font-weight: 600; cursor: pointer; color: var(--text-muted);
+            font-size: 0.7rem; font-weight: 600; cursor: pointer; color: var(--text-muted);
         }
         .routine-tab.active { background: var(--primary); color: white; }
         
@@ -49,7 +68,7 @@
         }
         .routine-item:last-child { border-bottom: none; }
         .routine-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--purple-accent); }
-        .routine-item label { font-size: 0.85rem; font-weight: 500; cursor: pointer; flex: 1; }
+        .routine-item label { font-size: 0.8rem; font-weight: 500; cursor: pointer; flex: 1; }
         .routine-item.done label { text-decoration: line-through; color: var(--text-muted); opacity: 0.6; }
 
         .announcement-banner {
@@ -59,7 +78,7 @@
     </style>
 </head>
 <body>
-    <div class="app-container" style="padding: 16px;">
+    <div class="app-container">
         <div class="announcement-banner" id="announcement-banner">
             <i data-lucide="megaphone" style="width:16px;"></i>
             <span id="announcement-content"></span>
@@ -129,8 +148,8 @@
     <a class="fab" href="add.html"><i data-lucide="plus"></i></a>
 
     <script type="module">
-        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_10';
-        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_10';
+        import { getProducts, calcDaysLeft, renderAlerts, renderProductCard } from './app.js?v=20260423_11';
+        import { signOut, getAnnouncements, supabase } from './supabaseClient.js?v=20260423_11';
 
         let currentCat = 'all';
         let allProducts = [];
